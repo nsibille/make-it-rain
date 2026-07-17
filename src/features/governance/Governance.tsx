@@ -136,7 +136,7 @@ function InstanceCard({
   onRemove: () => void;
 }) {
   return (
-    <Card as="article" data-slug={SLUGS.instanceCard}>
+    <Card as="article" data-slug={SLUGS.instanceCard} className="animate-fade-in-up">
       <div className="flex items-start justify-between gap-3">
         {canEdit ? (
           <input
@@ -155,7 +155,7 @@ function InstanceCard({
           <button
             onClick={onRemove}
             aria-label="Supprimer la réunion"
-            className="shrink-0 rounded-node p-1 text-ink-4 hover:bg-surface-2 hover:text-danger"
+            className="shrink-0 rounded-node p-1 text-ink-4 transition-all duration-[var(--duration-instant)] ease-[var(--ease)] hover:bg-surface-2 hover:text-danger active:scale-90"
           >
             <Trash2 size={15} aria-hidden />
           </button>
@@ -359,7 +359,7 @@ function StringList({
               <button
                 onClick={() => remove(i)}
                 aria-label="Retirer"
-                className="text-ink-4 opacity-0 hover:text-danger group-hover/it:opacity-100"
+                className="text-ink-4 opacity-0 transition-all hover:text-danger active:scale-90 group-hover/it:opacity-100"
               >
                 <X size={13} aria-hidden />
               </button>
@@ -387,7 +387,7 @@ function StringList({
           <button
             onClick={add}
             aria-label="Ajouter"
-            className="shrink-0 rounded-node border border-border-strong p-1 text-ink-2 hover:bg-surface-2"
+            className="shrink-0 rounded-node border border-border-strong p-1 text-ink-2 transition-all duration-[var(--duration-instant)] ease-[var(--ease)] hover:bg-surface-2 active:scale-90"
           >
             <Plus size={13} aria-hidden />
           </button>

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { ChevronsUpDown, LogOut } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { Avatar } from "@/components/ui/Avatar";
+import { Spinner } from "@/components/ui/Spinner";
 import { SLUGS } from "@/lib/slugs";
 import { cn } from "@/lib/cn";
 
@@ -68,7 +69,7 @@ export function AccountMenu({ email }: { email: string | null }) {
       {open && (
         <div
           role="menu"
-          className="absolute bottom-full left-0 z-20 mb-1 w-full overflow-hidden rounded-pop border border-border bg-surface shadow-2"
+          className="animate-scale-in absolute bottom-full left-0 z-20 mb-1 w-full origin-bottom overflow-hidden rounded-pop border border-border bg-surface shadow-2"
         >
           {email && (
             <div className="border-b border-border-soft px-3 py-2">
@@ -85,7 +86,11 @@ export function AccountMenu({ email }: { email: string | null }) {
             disabled={loading}
             className="flex w-full items-center gap-2 px-3 py-2 text-left text-caption text-ink transition-colors hover:bg-surface-2 disabled:opacity-55"
           >
-            <LogOut size={14} className="text-ink-3" aria-hidden />
+            {loading ? (
+              <Spinner size={14} className="text-ink-3" />
+            ) : (
+              <LogOut size={14} className="text-ink-3" aria-hidden />
+            )}
             {loading ? "Déconnexion…" : "Se déconnecter"}
           </button>
         </div>

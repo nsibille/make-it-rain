@@ -64,10 +64,46 @@ export function BreakdownTree({
   // ── Mutations optimistes ────────────────────────────────
   const [, startTransition] = useTransition();
 
+  // Ajout optimiste : le nœud apparaît immédiatement (id `temp-`), sans
+  // attendre l'API. À la réconciliation, on remplace l'id temporaire par l'id
+  // réel et on reporte ce changement sur d'éventuels enfants déjà rattachés.
   const addChild = useCallback(
-    async (parentId: string) => {
-      const row = await addNode(projectId, structure, parentId);
-      setNodes((prev) => [...prev, row]);
+    (parentId: string) => {
+      const id = `temp-${crypto.randomUUID()}`;
+      setNodes((prev) => {
+        const siblings = prev.filter((n) => n.parent_id === parentId);
+        return [
+          ...prev,
+          {
+            id,
+            project_id: projectId,
+            structure,
+            parent_id: parentId,
+            name: "",
+            position: siblings.length,
+            meta: {},
+            created_at: null,
+          },
+        ];
+      });
+      (async () => {
+        try {
+          const row = await addNode(projectId, structure, parentId);
+          setNodes((prev) =>
+            prev.map((n) =>
+              n.id === id
+                ? // Conserve une saisie faite pendant la fenêtre optimiste.
+                  { ...row, name: n.name || row.name, meta: n.meta ?? row.meta }
+                : n.parent_id === id
+                  ? { ...n, parent_id: row.id }
+                  : n,
+            ),
+          );
+        } catch {
+          // Retire le sous-arbre optimiste en cas d'échec réel.
+          setNodes((prev) => prev.filter((n) => n.id !== id && n.parent_id !== id));
+        }
+      })();
     },
     [projectId, structure],
   );
@@ -356,7 +392,7 @@ export function BreakdownTree({
               setView((v) => ({ ...v, k: clamp(v.k - 0.15, 0.4, 2) }))
             }
             aria-label="Dézoomer"
-            className="rounded-node border border-border p-1.5 text-ink-2 hover:bg-surface-2"
+            className="rounded-node border border-border p-1.5 text-ink-2 transition-all duration-[var(--duration-instant)] ease-[var(--ease)] hover:bg-surface-2 active:scale-90"
           >
             <Minus size={14} aria-hidden />
           </button>
@@ -368,14 +404,14 @@ export function BreakdownTree({
               setView((v) => ({ ...v, k: clamp(v.k + 0.15, 0.4, 2) }))
             }
             aria-label="Zoomer"
-            className="rounded-node border border-border p-1.5 text-ink-2 hover:bg-surface-2"
+            className="rounded-node border border-border p-1.5 text-ink-2 transition-all duration-[var(--duration-instant)] ease-[var(--ease)] hover:bg-surface-2 active:scale-90"
           >
             <Plus size={14} aria-hidden />
           </button>
           <button
             onClick={() => setView({ x: 0, y: 0, k: 1 })}
             aria-label="Réinitialiser la vue"
-            className="ml-1 rounded-node border border-border p-1.5 text-ink-2 hover:bg-surface-2"
+            className="ml-1 rounded-node border border-border p-1.5 text-ink-2 transition-all duration-[var(--duration-instant)] ease-[var(--ease)] hover:bg-surface-2 active:scale-90"
           >
             <Maximize2 size={14} aria-hidden />
           </button>
@@ -502,15 +538,17 @@ function NodeCard({
   const isObs = structure === "obs";
   const isNotesLevel = numbered && depth === 3;
   const canAddBox = numbered ? depth < 3 : depth < 4;
+  const pending = node.id.startsWith("temp-");
 
   return (
     <div
       data-card
       className={cn(
-        "group absolute rounded-node border shadow-1",
+        "group animate-fade-in-up absolute rounded-node border shadow-1 transition-[opacity,box-shadow] duration-[var(--duration-fast)] ease-[var(--ease)] hover:shadow-2",
         isRoot
           ? "border-ink bg-ink text-surface"
           : cn("border-border border-l-[3px] bg-surface", hue.rail),
+        pending && "opacity-60",
       )}
       style={{ left: x - NODE_W / 2, top: y, width: NODE_W }}
     >
@@ -543,7 +581,7 @@ function NodeCard({
                 onClick={() => onRemove(node.id)}
                 aria-label="Supprimer le nœud"
                 className={cn(
-                  "opacity-0 group-hover:opacity-100",
+                  "opacity-0 transition-all active:scale-90 group-hover:opacity-100",
                   isRoot ? "text-surface/70" : "text-ink-4 hover:text-danger",
                 )}
               >
@@ -599,7 +637,7 @@ function NodeCard({
           <button
             onClick={() => onAddChild(node.id)}
             className={cn(
-              "mt-2 inline-flex items-center gap-1 rounded-node border border-dashed px-2 py-0.5 text-nano",
+              "mt-2 inline-flex items-center gap-1 rounded-node border border-dashed px-2 py-0.5 text-nano transition-all duration-[var(--duration-instant)] ease-[var(--ease)] active:scale-95",
               isRoot
                 ? "border-surface/40 text-surface/80 hover:bg-surface/10"
                 : "border-border-strong text-ink-3 hover:bg-surface-2",
@@ -689,7 +727,7 @@ function Notes({
               <button
                 onClick={() => onRemove(n.id)}
                 aria-label="Supprimer la note"
-                className="text-ink-4 opacity-0 hover:text-danger group-hover/note:opacity-100"
+                className="text-ink-4 opacity-0 transition-all hover:text-danger active:scale-90 group-hover/note:opacity-100"
               >
                 <Trash2 size={11} aria-hidden />
               </button>
@@ -703,7 +741,7 @@ function Notes({
         <li>
           <button
             onClick={() => onAdd(parentId)}
-            className="inline-flex items-center gap-1 text-nano text-ink-3 hover:text-ink"
+            className="inline-flex items-center gap-1 text-nano text-ink-3 transition-all hover:text-ink active:scale-95"
           >
             <Plus size={10} aria-hidden />
             Note

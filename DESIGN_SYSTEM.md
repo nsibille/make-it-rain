@@ -60,6 +60,17 @@ Le WBS est la **sortie principale** du cadrage. Exemple de référence dans le D
 
 Tout composant réutilisable porte `data-slug` (CLAUDE.md §5). Réimplémenter en React depuis la référence — **ne pas** importer le HTML statique ni `support.js` (runtime de preview Claude Design).
 
+## Mouvement & micro-interactions
+
+Le mouvement est **discret, rapide, utile** — jamais décoratif. Il confirme l'action, jamais il ne la fait attendre. Source unique : tokens `--duration-*` / `--ease*` / `--shimmer-period` (`tokens.css §Mouvement`). Ne jamais coder une durée/courbe en dur.
+
+- **Courbes** : `--ease` (sortie standard) · `--ease-out` (décélération, entrées de panneaux) · `--ease-spring` (léger rebond, `pop`). **Durées** : `--duration-instant` 90 (pression) · `--duration-fast` 120 (hover/focus) · `--duration-base` 200 (fondus) · `--duration-slow` 320 (modales, volets).
+- **Boutons** (`Button` / `IconButton`) : pression tactile `active:scale` (token instant). Toute action qui déclenche un **appel back-end** passe `loading` → spinner + `disabled` + `aria-busy` (empêche le double-clic). Les boutons d'action bruts (icônes de suppression, `+`, cellules RACI) portent aussi `active:scale`.
+- **Squelettes** (`Skeleton` / `SkeletonText`, classe `.skeleton`) : bloc `--surface-2` + balayage clair (`--shimmer-period`). Servent le **lazy loading** via les fichiers `loading.tsx` de chaque route (tableau de bord, coquille projet, 6-Pack, arbres, gouvernance). Jamais de spinner plein écran : on montre la **forme** de ce qui charge.
+- **Optimistic UI** : les mutations partent **sans attendre l'API** (on suppose l'appel OK). L'élément apparaît immédiatement avec un id `temp-` (opacité réduite + micro-spinner), puis on **réconcilie** avec la ligne réelle ; rollback silencieux seulement en cas d'échec réel. Vaut pour : items du 6-Pack, nœuds d'arbre, commentaires d'annotation, statut projet, création dossier/projet (fermeture de modale immédiate).
+- **Entrées** : `animate-fade-in` (fondu), `animate-fade-in-up` (listes, cartes de projet, instances, nœuds), `animate-scale-in` (modales, popover compte), `animate-slide-in-right` (volet d'annotations), `animate-pop` (ponctuel). Classes token-driven définies dans `globals.css`.
+- **`prefers-reduced-motion`** : tout est neutralisé (durées ~0, balayage des squelettes masqué) par la règle globale de `globals.css`. Plancher non négociable.
+
 ## Écriture d'interface
 
 Français, dense, voix active. Le bouton dit l'action, le toast la confirme (« Publier » → « Projet publié »). Empty state = invitation à agir (« Construisez votre WBS — ajoutez un premier lot »). Erreurs précises, sans excuse.

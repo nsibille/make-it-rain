@@ -82,8 +82,8 @@ export function ShareButton({
               <p
                 className={
                   feedback.ok
-                    ? "text-caption text-status-done-text"
-                    : "text-caption text-status-blocked-text"
+                    ? "animate-fade-in-up text-caption text-status-done-text"
+                    : "animate-fade-in-up text-caption text-status-blocked-text"
                 }
               >
                 {feedback.message}
@@ -91,9 +91,9 @@ export function ShareButton({
             )}
 
             <div className="flex justify-end">
-              <Button type="submit" disabled={pending}>
-                <UserPlus size={14} aria-hidden />
-                {pending ? "…" : "Inviter"}
+              <Button type="submit" loading={pending}>
+                {!pending && <UserPlus size={14} aria-hidden />}
+                Inviter
               </Button>
             </div>
           </form>
@@ -162,7 +162,7 @@ function MemberRow({
           }
           disabled={pending}
           aria-label="Retirer le membre"
-          className="rounded-node p-1 text-ink-4 hover:bg-surface-2 hover:text-danger"
+          className="rounded-node p-1 text-ink-4 transition-all duration-[var(--duration-instant)] ease-[var(--ease)] hover:bg-surface-2 hover:text-danger active:scale-90 disabled:opacity-55"
         >
           <Trash2 size={14} aria-hidden />
         </button>

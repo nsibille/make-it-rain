@@ -1,20 +1,26 @@
 "use client";
 
 import Link from "next/link";
-import { useTransition } from "react";
+import { useState, useTransition } from "react";
 import { ArrowRight, Trash2 } from "lucide-react";
+import { cn } from "@/lib/cn";
 import { Button } from "@/components/ui/Button";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { SLUGS } from "@/lib/slugs";
-import { PROJECT_STATUS } from "@/features/projects/status";
+import { PROJECT_STATUS, type ProjectStatus } from "@/features/projects/status";
 import type { Project } from "@/features/filesystem/data";
 import { deleteProject, setProjectStatus } from "@/app/(app)/actions";
 
 export function ProjectCard({ project }: { project: Project }) {
   const [pending, startTransition] = useTransition();
-  const status = PROJECT_STATUS[project.status];
+  // Statut optimiste : le badge et le bouton basculent immédiatement, sans
+  // attendre le retour de l'API (on part du principe que l'appel passe).
+  const [status, setStatus] = useState<ProjectStatus>(project.status);
+  const [removed, setRemoved] = useState(false);
+  const meta = PROJECT_STATUS[status];
 
   function changeStatus(next: "draft" | "published") {
+    setStatus(next);
     const fd = new FormData();
     fd.set("projectId", project.id);
     fd.set("status", next);
@@ -23,15 +29,18 @@ export function ProjectCard({ project }: { project: Project }) {
 
   function remove() {
     if (!confirm(`Supprimer le projet « ${project.name} » ?`)) return;
+    setRemoved(true); // disparition immédiate
     const fd = new FormData();
     fd.set("projectId", project.id);
     startTransition(() => deleteProject(fd));
   }
 
+  if (removed) return null;
+
   return (
     <article
       data-slug={SLUGS.projectCard}
-      className="flex flex-col rounded-pop border border-border bg-surface p-4 transition-colors hover:border-border-strong"
+      className="animate-fade-in-up flex flex-col rounded-pop border border-border bg-surface p-4 transition-[transform,border-color,box-shadow] duration-[var(--duration-fast)] ease-[var(--ease)] hover:-translate-y-0.5 hover:border-border-strong hover:shadow-2"
     >
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-center gap-2.5">
@@ -40,7 +49,7 @@ export function ProjectCard({ project }: { project: Project }) {
           </span>
           <h3 className="text-section text-ink">{project.name}</h3>
         </div>
-        <StatusBadge tone={status.tone} label={status.label} />
+        <StatusBadge tone={meta.tone} label={meta.label} />
       </div>
 
       <p className="mt-3 font-mono text-nano text-ink-4">
@@ -57,17 +66,17 @@ export function ProjectCard({ project }: { project: Project }) {
       <div className="mt-4 flex items-center gap-2 border-t border-border-soft pt-3">
         <Link
           href={`/p/${project.id}`}
-          className="inline-flex items-center gap-1.5 rounded-node border border-ink bg-ink px-[13px] py-[6px] text-caption font-medium text-surface transition-colors hover:bg-ink-1"
+          className="inline-flex items-center gap-1.5 rounded-node border border-ink bg-ink px-[13px] py-[6px] text-caption font-medium text-surface transition-all duration-[var(--duration-instant)] ease-[var(--ease)] hover:bg-ink-1 active:scale-[0.97]"
         >
           Ouvrir
           <ArrowRight size={13} aria-hidden />
         </Link>
 
-        {project.status === "draft" ? (
+        {status === "draft" ? (
           <Button
             size="sm"
             variant="secondary"
-            disabled={pending}
+            loading={pending}
             onClick={() => changeStatus("published")}
           >
             Publier
@@ -76,7 +85,7 @@ export function ProjectCard({ project }: { project: Project }) {
           <Button
             size="sm"
             variant="secondary"
-            disabled={pending}
+            loading={pending}
             onClick={() => changeStatus("draft")}
           >
             Repasser en brouillon
@@ -87,7 +96,9 @@ export function ProjectCard({ project }: { project: Project }) {
           onClick={remove}
           disabled={pending}
           aria-label="Supprimer le projet"
-          className="ml-auto rounded-node p-1.5 text-ink-4 hover:bg-surface-2 hover:text-danger disabled:opacity-60"
+          className={cn(
+            "ml-auto rounded-node p-1.5 text-ink-4 transition-all duration-[var(--duration-instant)] ease-[var(--ease)] hover:bg-surface-2 hover:text-danger active:scale-90 disabled:opacity-60",
+          )}
         >
           <Trash2 size={15} aria-hidden />
         </button>

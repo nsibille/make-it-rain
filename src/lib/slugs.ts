@@ -8,6 +8,8 @@ export const SLUGS = {
   // Design system / primitives
   wordmark: "wordmark",
   button: "button",
+  spinner: "spinner",
+  skeleton: "skeleton",
   card: "card",
   chip: "chip",
   avatar: "avatar",

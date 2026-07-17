@@ -216,9 +216,10 @@ export function RaciMatrix({
                           disabled={!canEdit}
                           onClick={() => canEdit && cycleCell(i, j)}
                           className={cn(
-                            "mx-auto flex h-6 w-6 items-center justify-center rounded-chip font-mono text-caption",
+                            "mx-auto flex h-6 w-6 items-center justify-center rounded-chip font-mono text-caption transition-all duration-[var(--duration-instant)] ease-[var(--ease)]",
                             CELL_STYLE[val],
-                            canEdit && "hover:ring-1 hover:ring-border-strong",
+                            canEdit &&
+                              "hover:ring-1 hover:ring-border-strong active:scale-90",
                           )}
                         >
                           {val || "·"}
@@ -251,7 +252,7 @@ export function RaciMatrix({
           <button
             onClick={addLot}
             aria-label="Ajouter le lot"
-            className="rounded-node border border-border-strong p-1.5 text-ink-2 hover:bg-surface-2"
+            className="rounded-node border border-border-strong p-1.5 text-ink-2 transition-all duration-[var(--duration-instant)] ease-[var(--ease)] hover:bg-surface-2 active:scale-90"
           >
             <Plus size={14} aria-hidden />
           </button>

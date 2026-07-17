@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Send, Trash2, X } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Textarea } from "@/components/ui/Field";
+import { Skeleton } from "@/components/ui/Skeleton";
 import { SLUGS } from "@/lib/slugs";
 import { useAnnotations } from "./AnnotationsProvider";
 
@@ -33,13 +34,13 @@ export function AnnotationDrawer() {
   return (
     <div className="fixed inset-0 z-50 flex justify-end" role="presentation">
       <div
-        className="absolute inset-0 bg-ink/20"
+        className="animate-fade-in absolute inset-0 bg-ink/20"
         onClick={close}
         role="presentation"
       />
       <aside
         data-slug={SLUGS.annotationDrawer}
-        className="relative z-10 flex h-full w-full max-w-sm flex-col border-l border-border bg-surface shadow-2"
+        className="animate-slide-in-right relative z-10 flex h-full w-full max-w-sm flex-col border-l border-border bg-surface shadow-2"
         role="dialog"
         aria-label="Annotations du nœud"
       >
@@ -59,7 +60,21 @@ export function AnnotationDrawer() {
 
         <div className="flex-1 space-y-3 overflow-y-auto px-4 py-4">
           {loading && thread.length === 0 && (
-            <p className="text-body text-ink-3">Chargement…</p>
+            <div className="space-y-3">
+              {[0, 1, 2].map((i) => (
+                <div
+                  key={i}
+                  className="rounded-node border border-border bg-surface-2 p-3"
+                >
+                  <div className="flex items-center justify-between">
+                    <Skeleton variant="text" w={90} />
+                    <Skeleton variant="text" w={60} />
+                  </div>
+                  <Skeleton variant="text" className="mt-2 w-full" />
+                  <Skeleton variant="text" className="mt-1.5 w-2/3" />
+                </div>
+              ))}
+            </div>
           )}
           {!loading && thread.length === 0 && (
             <p className="text-body text-ink-3">
@@ -69,7 +84,7 @@ export function AnnotationDrawer() {
           {thread.map((a) => (
             <div
               key={a.id}
-              className="group rounded-node border border-border bg-surface-2 p-3"
+              className="group animate-fade-in-up rounded-node border border-border bg-surface-2 p-3"
             >
               <div className="flex items-center justify-between gap-2">
                 <span className="truncate font-mono text-nano text-ink-3">

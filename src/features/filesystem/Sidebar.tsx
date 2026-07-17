@@ -191,7 +191,10 @@ function FolderNode({
   return (
     <li>
       <div
-        className="group flex items-center gap-1 rounded-node px-1.5 py-1 hover:bg-surface-2"
+        className={cn(
+          "group flex items-center gap-1 rounded-node px-1.5 py-1 transition-opacity hover:bg-surface-2",
+          pending && "opacity-50",
+        )}
         style={{ paddingLeft: depth * 12 + 6 }}
       >
         <button
@@ -224,7 +227,7 @@ function FolderNode({
       </div>
 
       {open && !isEmpty && (
-        <ul className="space-y-0.5">
+        <ul className="animate-fade-in space-y-0.5">
           {children.map((child) => (
             <FolderNode
               key={child.id}
@@ -286,10 +289,10 @@ function CreateFolderModal({
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const fd = new FormData(e.currentTarget);
-    startTransition(async () => {
-      await createFolder(fd);
-      onClose();
-    });
+    // Fluidité : on ferme la modale tout de suite et on laisse la création
+    // se faire en arrière-plan (on part du principe que l'appel passe).
+    onClose();
+    startTransition(() => createFolder(fd));
   }
 
   return (
@@ -321,10 +324,9 @@ function CreateProjectModal({
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const fd = new FormData(e.currentTarget);
-    startTransition(async () => {
-      await createProject(fd);
-      onClose();
-    });
+    // Fluidité : fermeture immédiate, création en arrière-plan.
+    onClose();
+    startTransition(() => createProject(fd));
   }
 
   return (
@@ -408,8 +410,8 @@ function ModalActions({
       <Button type="button" variant="ghost" onClick={onClose}>
         Annuler
       </Button>
-      <Button type="submit" disabled={pending}>
-        {pending ? "…" : submitLabel}
+      <Button type="submit" loading={pending}>
+        {submitLabel}
       </Button>
     </div>
   );
