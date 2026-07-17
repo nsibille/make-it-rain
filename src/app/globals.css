@@ -86,6 +86,13 @@ body {
   text-rendering: optimizeLegibility;
 }
 
+/* Titre de nœud éditable (contenteditable) : placeholder si vide */
+.node-title:empty::before {
+  content: attr(data-placeholder);
+  color: var(--ink-4);
+  pointer-events: none;
+}
+
 /* Label mono en MAJUSCULES (DESIGN_SYSTEM §Typographie) */
 .label-mono {
   font-family: var(--font-mono-stack);

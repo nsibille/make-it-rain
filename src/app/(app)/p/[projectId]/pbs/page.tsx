@@ -1,11 +1,25 @@
-import { ComingSoon } from "@/features/projects/ComingSoon";
+import { notFound } from "next/navigation";
+import { getProjectAccess } from "@/features/projects/access";
+import { getBreakdownNodes } from "@/features/breakdown/data";
+import { BreakdownTree } from "@/features/breakdown/BreakdownTree";
 
-export default function PbsPage() {
+export default async function PbsPage({
+  params,
+}: {
+  params: Promise<{ projectId: string }>;
+}) {
+  const { projectId } = await params;
+  const access = await getProjectAccess(projectId);
+  if (!access) notFound();
+
+  const nodes = await getBreakdownNodes(projectId, "pbs");
   return (
-    <ComingSoon
-      milestone="M4 · à venir"
-      title="PBS — Product Breakdown Structure"
-      description="De quoi le produit est fait : composants et livrables décomposés, en boîtes numérotées."
+    <BreakdownTree
+      projectId={projectId}
+      structure="pbs"
+      canEdit={access.canEdit}
+      projectName={access.project.name}
+      initialNodes={nodes}
     />
   );
 }

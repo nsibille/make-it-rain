@@ -1,11 +1,25 @@
-import { ComingSoon } from "@/features/projects/ComingSoon";
+import { notFound } from "next/navigation";
+import { getProjectAccess } from "@/features/projects/access";
+import { getBreakdownNodes } from "@/features/breakdown/data";
+import { BreakdownTree } from "@/features/breakdown/BreakdownTree";
 
-export default function WbsPage() {
+export default async function WbsPage({
+  params,
+}: {
+  params: Promise<{ projectId: string }>;
+}) {
+  const { projectId } = await params;
+  const access = await getProjectAccess(projectId);
+  if (!access) notFound();
+
+  const nodes = await getBreakdownNodes(projectId, "wbs");
   return (
-    <ComingSoon
-      milestone="M4 · à venir"
-      title="WBS — Work Breakdown Structure"
-      description="Le travail à réaliser en lots et sous-lots, sur 4 niveaux numérotés (1.0 / 1.0.1 / 1.0.1.1) + notes libres."
+    <BreakdownTree
+      projectId={projectId}
+      structure="wbs"
+      canEdit={access.canEdit}
+      projectName={access.project.name}
+      initialNodes={nodes}
     />
   );
 }
