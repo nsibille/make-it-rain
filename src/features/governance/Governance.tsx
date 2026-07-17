@@ -3,6 +3,8 @@
 import { useRef, useState, useTransition } from "react";
 import { Plus, Trash2, X } from "lucide-react";
 import { cn } from "@/lib/cn";
+import { Button } from "@/components/ui/Button";
+import { Card } from "@/components/ui/Card";
 import { SLUGS } from "@/lib/slugs";
 import type { GovernanceData, Instance } from "./data";
 import { saveInstances } from "./actions";
@@ -81,18 +83,15 @@ export function Governance({
           </p>
         </div>
         {canEdit && (
-          <button
-            onClick={addInstance}
-            className="inline-flex shrink-0 items-center gap-1.5 rounded-node bg-brand px-3 py-2 text-body font-medium text-surface hover:bg-ink-1"
-          >
+          <Button onClick={addInstance} className="shrink-0">
             <Plus size={14} aria-hidden />
             Réunion
-          </button>
+          </Button>
         )}
       </header>
 
       {instances.length === 0 ? (
-        <div className="rounded-node border border-dashed border-border-strong bg-surface-2 px-6 py-10 text-center">
+        <div className="rounded-pop border border-dashed border-border-strong bg-surface-2 px-6 py-10 text-center">
           <p className="text-section text-ink">Aucune instance définie.</p>
           <p className="mt-1 text-body text-ink-2">
             {canEdit
@@ -137,10 +136,7 @@ function InstanceCard({
   onRemove: () => void;
 }) {
   return (
-    <article
-      data-slug={SLUGS.instanceCard}
-      className="rounded-node border border-border bg-surface p-4 shadow-1"
-    >
+    <Card as="article" data-slug={SLUGS.instanceCard}>
       <div className="flex items-start justify-between gap-3">
         {canEdit ? (
           <input
@@ -253,7 +249,7 @@ function InstanceCard({
           onChange={(items) => onCommit("docs_out", items)}
         />
       </div>
-    </article>
+    </Card>
   );
 }
 

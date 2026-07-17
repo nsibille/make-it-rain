@@ -515,13 +515,13 @@ function NodeCard({
       style={{ left: x - NODE_W / 2, top: y, width: NODE_W }}
     >
       <div className="px-3 py-2">
-        {/* Ligne code / type */}
+        {/* Ligne code / type — code neutre (la teinte vit dans le rail gauche) */}
         <div className="flex items-center justify-between">
           {numbered ? (
             <span
               className={cn(
                 "font-mono text-nano",
-                isRoot ? "text-surface/70" : hue.text,
+                isRoot ? "text-surface/70" : "text-ink-3",
               )}
             >
               {structure.toUpperCase()} · {code}
@@ -530,7 +530,7 @@ function NodeCard({
             <span
               className={cn(
                 "font-mono text-nano uppercase tracking-[0.14em]",
-                isRoot ? "text-surface/70" : hue.text,
+                isRoot ? "text-surface/70" : "text-ink-3",
               )}
             >
               {isRoot ? "OBS" : "Acteur"}
@@ -556,7 +556,8 @@ function NodeCard({
         {/* Titre éditable */}
         <div
           className={cn(
-            "node-title mt-1 rounded-chip text-body font-semibold outline-none",
+            "node-title mt-1 rounded-chip font-semibold leading-tight outline-none",
+            depth <= 1 ? "text-body" : "text-caption",
             isRoot ? "text-surface" : "text-ink",
             canEdit && !isRoot && "focus:bg-surface-2 focus:text-ink",
             canEdit && "cursor-text",

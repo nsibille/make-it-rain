@@ -1,80 +1,132 @@
 /* ============================================================
-   tokens.css — Cadrage Studio · SOURCE DE VÉRITÉ visuelle
+   tokens.css — Stuudio · SOURCE DE VÉRITÉ visuelle
    ------------------------------------------------------------
-   Direction : instrument de planification dense, oklch low-chroma,
-   chaque *sens* = une teinte (hue) stable. Base 4px, densité forte.
+   Instrument de planification dense, oklch low-chroma, chaque
+   *sens* = une teinte (hue) stable. Base 4px, densité extrême.
+   Valeurs alignées AU PIXEL sur design/design-system-reference.html.
    Ne JAMAIS coder une couleur / taille en dur ailleurs : lire ces tokens.
    (Mappés en thème Tailwind dans src/app/globals.css via @theme inline.)
 
-   RECETTE DES TINTS (par teinte h) :
-     base  = oklch(0.55–0.62  0.10–0.15  h)   → filet, texte accent
-     soft  = oklch(0.96       0.03–0.04  h)   → fond de pastille
-     text  = oklch(0.42–0.44  0.09–0.13  h)   → texte sur soft
-   Neutres (ink/surface/border) : hue commune h260, chroma ~0.005.
+   RECETTE DES TINTS (par teinte H) :
+     mark = oklch(0.58–0.66  0.12–0.16  H)   point / accent / rail
+     soft = oklch(0.955–0.975 0.02–0.035 H)  fond de pastille
+     line = oklch(0.90        0.045–0.052 H)  bordure de pastille
+     text = oklch(0.38–0.48   0.10–0.14  H)   texte sur soft
+   Neutres = hex exacts de la référence (froids, désaturés).
    ============================================================ */
 
 :root {
-  /* ── Neutres : encre & surfaces ─────────────────────────── */
-  --ink:            oklch(0.20 0.006 260);   /* texte primaire · = --brand */
-  --ink-1:          oklch(0.28 0.006 260);   /* hover action primaire */
-  --ink-2:          oklch(0.44 0.006 260);   /* texte secondaire */
-  --ink-3:          oklch(0.56 0.006 260);   /* labels mono, méta */
-  --ink-4:          oklch(0.72 0.006 260);   /* draft / neutre faible */
+  /* ── Neutres : encre & surfaces (hex exacts de la référence) ── */
+  --bg:             #FBFBFC;  /* fond de page */
+  --surface:        #FFFFFF;  /* cartes, nœuds */
+  --surface-2:      #F5F6F7;  /* panneaux inset */
+  --surface-3:      #FCFCFD;  /* en-têtes de table, hover */
 
-  --surface:        oklch(1     0     0);    /* fond principal (blanc) */
-  --surface-2:      oklch(0.985 0.002 260);  /* panneau / focus subtil */
-  --surface-3:      oklch(0.968 0.003 260);  /* fond enfoncé */
+  --border-soft:    #EEF0F2;  /* séparateurs internes */
+  --border:         #E6E8EB;  /* bordure standard */
+  --border-strong:  #D3D6DA;  /* champs, connecteurs */
 
-  --border:         oklch(0.92  0.004 260);
-  --border-strong:  oklch(0.84  0.006 260);
-  --border-soft:    oklch(0.95  0.003 260);
+  --ink:            #14161A;  /* texte principal / noir */
+  --ink-1:          #282B31;  /* titres denses, hover action primaire */
+  --ink-2:          #5A6069;  /* texte secondaire */
+  --ink-3:          #8A9099;  /* texte tertiaire, labels mono */
+  --ink-4:          #A2A8B0;  /* désactivé, hints, draft */
+  --ink-5:          #C4C8CE;  /* placeholders, vides */
 
   --brand:          var(--ink);              /* action primaire = encre */
-  --danger:         oklch(0.55  0.17  25);
+  --danger:         oklch(0.55  0.16  25);
 
-  /* ── Teintes par sens : PBS / WBS / OBS ─────────────────── */
-  --pbs:            oklch(0.62 0.10 200);    /* Produit  · cyan  h200 */
-  --pbs-soft:       oklch(0.96 0.030 200);
+  /* ── Type de composant : PBS / WBS / OBS ────────────────── */
+  --pbs:            oklch(0.62 0.12 200);     /* Produit  · cyan  h200 */
+  --pbs-soft:       oklch(0.965 0.030 200);
+  --pbs-line:       oklch(0.90 0.045 200);
   --pbs-text:       oklch(0.44 0.090 200);
 
-  --wbs:            oklch(0.52 0.13 268);    /* Travail  · indigo h268 */
-  --wbs-soft:       oklch(0.96 0.035 268);
+  --wbs:            oklch(0.62 0.14 268);     /* Travail  · indigo h268 */
+  --wbs-soft:       oklch(0.965 0.028 268);
+  --wbs-line:       oklch(0.90 0.045 268);
   --wbs-text:       oklch(0.42 0.120 268);
 
-  --obs:            oklch(0.58 0.14 330);    /* Organis. · magenta h330 */
-  --obs-soft:       oklch(0.96 0.035 330);
+  --obs:            oklch(0.62 0.15 330);     /* Organis. · magenta h330 */
+  --obs-soft:       oklch(0.965 0.030 330);
+  --obs-line:       oklch(0.90 0.050 330);
   --obs-text:       oklch(0.44 0.130 330);
 
   /* ── RACI · R h255 / A h292 / C h165 / I h75 ────────────── */
-  --raci-r:         oklch(0.55 0.13 255);
-  --raci-r-soft:    oklch(0.96 0.030 255);
-  --raci-r-text:    oklch(0.42 0.120 255);
+  --raci-r:         oklch(0.62 0.14 255);
+  --raci-r-soft:    oklch(0.955 0.030 255);
+  --raci-r-line:    oklch(0.90 0.045 255);
+  --raci-r-text:    oklch(0.42 0.130 255);
 
-  --raci-a:         oklch(0.55 0.15 292);
-  --raci-a-soft:    oklch(0.96 0.035 292);
-  --raci-a-text:    oklch(0.43 0.130 292);
+  --raci-a:         oklch(0.62 0.14 292);
+  --raci-a-soft:    oklch(0.955 0.030 292);
+  --raci-a-line:    oklch(0.90 0.045 292);
+  --raci-a-text:    oklch(0.42 0.130 292);
 
-  --raci-c:         oklch(0.58 0.10 165);
-  --raci-c-soft:    oklch(0.96 0.030 165);
-  --raci-c-text:    oklch(0.42 0.090 165);
+  --raci-c:         oklch(0.60 0.12 165);
+  --raci-c-soft:    oklch(0.955 0.030 165);
+  --raci-c-line:    oklch(0.90 0.045 165);
+  --raci-c-text:    oklch(0.38 0.110 165);
 
-  --raci-i:         oklch(0.70 0.11 75);
-  --raci-i-soft:    oklch(0.96 0.035 75);
-  --raci-i-text:    oklch(0.46 0.100 75);
+  --raci-i:         oklch(0.66 0.13 75);
+  --raci-i-soft:    oklch(0.955 0.030 75);
+  --raci-i-line:    oklch(0.90 0.050 75);
+  --raci-i-text:    oklch(0.44 0.120 75);
 
-  /* ── État · en cours h255 / bloqué h25 / attente h75 / terminé h150 ── */
-  --status-progress: oklch(0.55 0.13 255);
-  --status-blocked:  oklch(0.58 0.17 25);
-  --status-waiting:  oklch(0.72 0.12 75);
-  --status-done:     oklch(0.60 0.12 150);
+  /* ── État · draft / en cours h255 / bloqué h25 / attente h75 / terminé h150 ── */
+  --status-draft:        var(--ink-4);
+  --status-draft-soft:   var(--surface-2);
+  --status-draft-line:   var(--border);
+  --status-draft-text:   var(--ink-2);
+
+  --status-progress:      oklch(0.62 0.14 255);
+  --status-progress-soft: oklch(0.975 0.020 255);
+  --status-progress-line: oklch(0.90 0.045 255);
+  --status-progress-text: oklch(0.45 0.100 255);
+
+  --status-blocked:       oklch(0.60 0.16 25);
+  --status-blocked-soft:  oklch(0.975 0.022 25);
+  --status-blocked-line:  oklch(0.90 0.052 25);
+  --status-blocked-text:  oklch(0.48 0.140 25);
+
+  --status-waiting:       oklch(0.66 0.13 75);
+  --status-waiting-soft:  oklch(0.975 0.022 75);
+  --status-waiting-line:  oklch(0.90 0.050 75);
+  --status-waiting-text:  oklch(0.44 0.120 75);
+
+  --status-done:          oklch(0.58 0.13 150);
+  --status-done-soft:     oklch(0.975 0.020 150);
+  --status-done-line:     oklch(0.90 0.045 150);
+  --status-done-text:     oklch(0.42 0.110 150);
 
   /* ── Risque · faible h150 / moyen h75 / élevé h25 ───────── */
-  --risk-low:       oklch(0.60 0.12 150);
-  --risk-med:       oklch(0.72 0.12 75);
-  --risk-high:      oklch(0.58 0.17 25);
+  --risk-low:        oklch(0.58 0.13 150);
+  --risk-low-soft:   oklch(0.965 0.028 150);
+  --risk-low-line:   oklch(0.90 0.045 150);
+
+  --risk-med:        oklch(0.66 0.13 75);
+  --risk-med-soft:   oklch(0.965 0.032 75);
+  --risk-med-line:   oklch(0.90 0.050 75);
+
+  --risk-high:       oklch(0.62 0.14 25);
+  --risk-high-soft:  oklch(0.965 0.032 25);
+  --risk-high-line:  oklch(0.90 0.052 25);
+
+  /* ── Équipe / propriétaire (catégoriels, 6 teintes) ─────── */
+  --team-1:      oklch(0.62 0.13 210);  --team-1-soft: oklch(0.965 0.030 210); --team-1-line: oklch(0.90 0.045 210);
+  --team-2:      oklch(0.62 0.14 268);  --team-2-soft: oklch(0.965 0.028 268); --team-2-line: oklch(0.90 0.045 268);
+  --team-3:      oklch(0.62 0.15 330);  --team-3-soft: oklch(0.965 0.030 330); --team-3-line: oklch(0.90 0.050 330);
+  --team-4:      oklch(0.62 0.14 25);   --team-4-soft: oklch(0.965 0.032 25);  --team-4-line: oklch(0.90 0.052 25);
+  --team-5:      oklch(0.58 0.13 150);  --team-5-soft: oklch(0.965 0.030 150); --team-5-line: oklch(0.90 0.045 150);
+  --team-6:      oklch(0.66 0.13 75);   --team-6-soft: oklch(0.965 0.032 75);  --team-6-line: oklch(0.90 0.050 75);
+
+  /* ── Projet (1 teinte par projet — bord gauche) ─────────── */
+  --project-a:   oklch(0.62 0.14 25);
+  --project-b:   oklch(0.62 0.13 210);
 
   /* ── Graphe ─────────────────────────────────────────────── */
-  --graph-connector: #D3D6DA;               /* connecteurs orthogonaux 1px */
+  --graph-connector:     var(--border-strong);  /* connecteurs orthogonaux 1px */
+  --graph-node-rail:     3px;                    /* bande de type (bord gauche) */
 
   /* ── Typographie ────────────────────────────────────────── */
   /* Sans = Helvetica Neue (system stack, aucune webfont).
@@ -84,40 +136,32 @@
   --font-mono-stack: var(--font-jetbrains, "JetBrains Mono"),
                      ui-monospace, "SFMono-Regular", Menlo, monospace;
 
-  /* Échelle (taille · graisse · interlettrage) */
-  --text-display:   2rem;      /* 32px */
-  --text-display--line-height: 1.12;
-  --text-display--letter-spacing: -0.025em;
-  --text-display--font-weight: 600;
+  /* Échelle (px · line-height unitless) — bornée, cf. DESIGN_SYSTEM */
+  --fs-display: 2rem;        --lh-display: 1.25;   /* 32 / 40 */
+  --fs-title:   1.5rem;      --lh-title:   1.25;   /* 24 / 30 */
+  --fs-section: 1rem;        --lh-section: 1.375;  /* 16 / 22 */
+  --fs-body:    0.8125rem;   --lh-body:    1.538;  /* 13 / 20 */
+  --fs-caption: 0.71875rem;  --lh-caption: 1.391;  /* 11.5 / 16 */
+  --fs-micro:   0.625rem;    --lh-micro:   1.4;    /* 10 / 14 */
+  --fs-nano:    0.53125rem;  --lh-nano:    1.412;  /* 8.5 / 12 */
 
-  --text-title:     1.5rem;    /* 24px */
-  --text-title--line-height: 1.18;
-  --text-title--letter-spacing: -0.02em;
-  --text-title--font-weight: 600;
-
-  --text-section:   1rem;      /* 16px */
-  --text-section--line-height: 1.35;
-  --text-section--font-weight: 600;
-
-  --text-body:      0.8125rem; /* 13px */
-  --text-body--line-height: 1.5;
-
-  --text-caption:   0.71875rem;/* 11.5px */
-  --text-caption--line-height: 1.4;
-
-  --text-micro:     0.625rem;  /* 10px */
-  --text-micro--line-height: 1.3;
-
-  --text-nano:      0.53125rem;/* 8.5px */
-  --text-nano--line-height: 1.25;
+  --tracking-tight: -0.025em;
+  --tracking-title: -0.02em;
+  --tracking-label: 0.14em;
 
   /* ── Formes ─────────────────────────────────────────────── */
-  --radius-chip:    4px;   /* cellules, chips */
-  --radius-node:    6px;   /* nœuds, boutons */
-  --radius-pop:     8px;   /* popovers, modals, canvas */
+  --radius-chip:    4px;    /* cellules, chips */
+  --radius-node:    6px;    /* nœuds, boutons */
+  --radius-pop:     8px;    /* popovers, modals, canvas */
+  --radius-shell:   10px;   /* fenêtres, shell */
 
-  --shadow-1: 0 1px 2px oklch(0.20 0.006 260 / 0.08),
-              0 1px 1px oklch(0.20 0.006 260 / 0.04);
-  --shadow-2: 0 4px 12px oklch(0.20 0.006 260 / 0.12),
-              0 2px 4px oklch(0.20 0.006 260 / 0.06);
+  /* ── Élévation (ombres quasi absentes — hiérarchie par bordures) ── */
+  --shadow-1: 0 1px 2px rgba(20, 22, 26, 0.05);
+  --shadow-2: 0 4px 14px rgba(20, 22, 26, 0.08);
+  --shadow-3: 0 4px 24px rgba(20, 22, 26, 0.06);
+
+  /* ── Mouvement ──────────────────────────────────────────── */
+  --ease: cubic-bezier(0.2, 0, 0, 1);
+  --duration-fast: 120ms;
+  --duration-base: 200ms;
 }
