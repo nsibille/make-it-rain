@@ -1,0 +1,123 @@
+/* ============================================================
+   tokens.css — Cadrage Studio · SOURCE DE VÉRITÉ visuelle
+   ------------------------------------------------------------
+   Direction : instrument de planification dense, oklch low-chroma,
+   chaque *sens* = une teinte (hue) stable. Base 4px, densité forte.
+   Ne JAMAIS coder une couleur / taille en dur ailleurs : lire ces tokens.
+   (Mappés en thème Tailwind dans src/app/globals.css via @theme inline.)
+
+   RECETTE DES TINTS (par teinte h) :
+     base  = oklch(0.55–0.62  0.10–0.15  h)   → filet, texte accent
+     soft  = oklch(0.96       0.03–0.04  h)   → fond de pastille
+     text  = oklch(0.42–0.44  0.09–0.13  h)   → texte sur soft
+   Neutres (ink/surface/border) : hue commune h260, chroma ~0.005.
+   ============================================================ */
+
+:root {
+  /* ── Neutres : encre & surfaces ─────────────────────────── */
+  --ink:            oklch(0.20 0.006 260);   /* texte primaire · = --brand */
+  --ink-1:          oklch(0.28 0.006 260);   /* hover action primaire */
+  --ink-2:          oklch(0.44 0.006 260);   /* texte secondaire */
+  --ink-3:          oklch(0.56 0.006 260);   /* labels mono, méta */
+  --ink-4:          oklch(0.72 0.006 260);   /* draft / neutre faible */
+
+  --surface:        oklch(1     0     0);    /* fond principal (blanc) */
+  --surface-2:      oklch(0.985 0.002 260);  /* panneau / focus subtil */
+  --surface-3:      oklch(0.968 0.003 260);  /* fond enfoncé */
+
+  --border:         oklch(0.92  0.004 260);
+  --border-strong:  oklch(0.84  0.006 260);
+  --border-soft:    oklch(0.95  0.003 260);
+
+  --brand:          var(--ink);              /* action primaire = encre */
+  --danger:         oklch(0.55  0.17  25);
+
+  /* ── Teintes par sens : PBS / WBS / OBS ─────────────────── */
+  --pbs:            oklch(0.62 0.10 200);    /* Produit  · cyan  h200 */
+  --pbs-soft:       oklch(0.96 0.030 200);
+  --pbs-text:       oklch(0.44 0.090 200);
+
+  --wbs:            oklch(0.52 0.13 268);    /* Travail  · indigo h268 */
+  --wbs-soft:       oklch(0.96 0.035 268);
+  --wbs-text:       oklch(0.42 0.120 268);
+
+  --obs:            oklch(0.58 0.14 330);    /* Organis. · magenta h330 */
+  --obs-soft:       oklch(0.96 0.035 330);
+  --obs-text:       oklch(0.44 0.130 330);
+
+  /* ── RACI · R h255 / A h292 / C h165 / I h75 ────────────── */
+  --raci-r:         oklch(0.55 0.13 255);
+  --raci-r-soft:    oklch(0.96 0.030 255);
+  --raci-r-text:    oklch(0.42 0.120 255);
+
+  --raci-a:         oklch(0.55 0.15 292);
+  --raci-a-soft:    oklch(0.96 0.035 292);
+  --raci-a-text:    oklch(0.43 0.130 292);
+
+  --raci-c:         oklch(0.58 0.10 165);
+  --raci-c-soft:    oklch(0.96 0.030 165);
+  --raci-c-text:    oklch(0.42 0.090 165);
+
+  --raci-i:         oklch(0.70 0.11 75);
+  --raci-i-soft:    oklch(0.96 0.035 75);
+  --raci-i-text:    oklch(0.46 0.100 75);
+
+  /* ── État · en cours h255 / bloqué h25 / attente h75 / terminé h150 ── */
+  --status-progress: oklch(0.55 0.13 255);
+  --status-blocked:  oklch(0.58 0.17 25);
+  --status-waiting:  oklch(0.72 0.12 75);
+  --status-done:     oklch(0.60 0.12 150);
+
+  /* ── Risque · faible h150 / moyen h75 / élevé h25 ───────── */
+  --risk-low:       oklch(0.60 0.12 150);
+  --risk-med:       oklch(0.72 0.12 75);
+  --risk-high:      oklch(0.58 0.17 25);
+
+  /* ── Graphe ─────────────────────────────────────────────── */
+  --graph-connector: #D3D6DA;               /* connecteurs orthogonaux 1px */
+
+  /* ── Typographie ────────────────────────────────────────── */
+  /* Sans = Helvetica Neue (system stack, aucune webfont).
+     Mono = JetBrains Mono (--font-jetbrains injecté par next/font). */
+  --font-sans-stack: "Helvetica Neue", Helvetica, Arial, "Segoe UI",
+                     Roboto, system-ui, sans-serif;
+  --font-mono-stack: var(--font-jetbrains, "JetBrains Mono"),
+                     ui-monospace, "SFMono-Regular", Menlo, monospace;
+
+  /* Échelle (taille · graisse · interlettrage) */
+  --text-display:   2rem;      /* 32px */
+  --text-display--line-height: 1.12;
+  --text-display--letter-spacing: -0.025em;
+  --text-display--font-weight: 600;
+
+  --text-title:     1.5rem;    /* 24px */
+  --text-title--line-height: 1.18;
+  --text-title--letter-spacing: -0.02em;
+  --text-title--font-weight: 600;
+
+  --text-section:   1rem;      /* 16px */
+  --text-section--line-height: 1.35;
+  --text-section--font-weight: 600;
+
+  --text-body:      0.8125rem; /* 13px */
+  --text-body--line-height: 1.5;
+
+  --text-caption:   0.71875rem;/* 11.5px */
+  --text-caption--line-height: 1.4;
+
+  --text-micro:     0.625rem;  /* 10px */
+  --text-micro--line-height: 1.3;
+
+  --text-nano:      0.53125rem;/* 8.5px */
+  --text-nano--line-height: 1.25;
+
+  /* ── Formes ─────────────────────────────────────────────── */
+  --radius-chip:    4px;   /* cellules, chips */
+  --radius-node:    6px;   /* nœuds, boutons */
+  --radius-pop:     8px;   /* popovers, modals, canvas */
+
+  --shadow-1: 0 1px 2px oklch(0.20 0.006 260 / 0.08),
+              0 1px 1px oklch(0.20 0.006 260 / 0.04);
+  --shadow-2: 0 4px 12px oklch(0.20 0.006 260 / 0.12),
+              0 2px 4px oklch(0.20 0.006 260 / 0.06);
+}
