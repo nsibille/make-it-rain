@@ -5,6 +5,8 @@ import { getProjectAccess, type ProjectRole } from "@/features/projects/access";
 import { ProjectTabs } from "@/features/projects/ProjectTabs";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { PROJECT_STATUS } from "@/features/projects/status";
+import { getProjectMembers } from "@/features/collaboration/members";
+import { ShareButton } from "@/features/collaboration/ShareButton";
 
 const ROLE_LABEL: Record<NonNullable<ProjectRole>, string> = {
   pmo: "PMO",
@@ -29,6 +31,7 @@ export default async function ProjectLayout({
 
   const { project, role } = access;
   const status = PROJECT_STATUS[project.status];
+  const members = access.canEdit ? await getProjectMembers(projectId) : [];
 
   return (
     <div className="flex min-h-dvh flex-col">
@@ -53,6 +56,9 @@ export default async function ProjectLayout({
               {role ? ROLE_LABEL[role] : "Lecture seule"}
             </span>
             <StatusBadge label={status.label} dotClassName={status.dot} />
+            {access.canEdit && (
+              <ShareButton projectId={projectId} members={members} />
+            )}
           </div>
         </div>
       </header>

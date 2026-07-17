@@ -1,7 +1,8 @@
 import { notFound } from "next/navigation";
 import { getProjectAccess } from "@/features/projects/access";
 import { getBreakdownNodes } from "@/features/breakdown/data";
-import { BreakdownTree } from "@/features/breakdown/BreakdownTree";
+import { getAnnotationCounts } from "@/features/collaboration/annotations-data";
+import { BreakdownScreen } from "@/features/collaboration/BreakdownScreen";
 
 export default async function WbsPage({
   params,
@@ -12,14 +13,20 @@ export default async function WbsPage({
   const access = await getProjectAccess(projectId);
   if (!access) notFound();
 
-  const nodes = await getBreakdownNodes(projectId, "wbs");
+  const [nodes, counts] = await Promise.all([
+    getBreakdownNodes(projectId, "wbs"),
+    getAnnotationCounts(projectId),
+  ]);
+
   return (
-    <BreakdownTree
+    <BreakdownScreen
       projectId={projectId}
       structure="wbs"
       canEdit={access.canEdit}
+      canAnnotate={access.canAnnotate}
       projectName={access.project.name}
       initialNodes={nodes}
+      initialCounts={counts}
     />
   );
 }

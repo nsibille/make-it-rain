@@ -21,6 +21,7 @@ import {
   updateNodeMeta,
   updateNodeName,
 } from "./actions";
+import { AnnotationBadge } from "@/features/collaboration/AnnotationBadge";
 
 const NODE_W = 212;
 const GAP_X = 40;
@@ -451,18 +452,21 @@ function NodeCard({
               {isRoot ? "OBS" : "Acteur"}
             </span>
           )}
-          {canEdit && !isRoot && (
-            <button
-              onClick={() => onRemove(node.id)}
-              aria-label="Supprimer le nœud"
-              className={cn(
-                "opacity-0 group-hover:opacity-100",
-                isRoot ? "text-surface/70" : "text-ink-4 hover:text-danger",
-              )}
-            >
-              <Trash2 size={13} aria-hidden />
-            </button>
-          )}
+          <div className="flex items-center gap-1">
+            <AnnotationBadge nodeId={node.id} isRoot={isRoot} />
+            {canEdit && !isRoot && (
+              <button
+                onClick={() => onRemove(node.id)}
+                aria-label="Supprimer le nœud"
+                className={cn(
+                  "opacity-0 group-hover:opacity-100",
+                  isRoot ? "text-surface/70" : "text-ink-4 hover:text-danger",
+                )}
+              >
+                <Trash2 size={13} aria-hidden />
+              </button>
+            )}
+          </div>
         </div>
 
         {/* Titre éditable */}
