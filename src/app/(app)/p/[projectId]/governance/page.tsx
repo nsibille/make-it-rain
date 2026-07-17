@@ -1,11 +1,23 @@
-import { ComingSoon } from "@/features/projects/ComingSoon";
+import { notFound } from "next/navigation";
+import { getProjectAccess } from "@/features/projects/access";
+import { getGovernance } from "@/features/governance/data";
+import { Governance } from "@/features/governance/Governance";
 
-export default function GovernancePage() {
+export default async function GovernancePage({
+  params,
+}: {
+  params: Promise<{ projectId: string }>;
+}) {
+  const { projectId } = await params;
+  const access = await getProjectAccess(projectId);
+  if (!access) notFound();
+
+  const data = await getGovernance(projectId);
   return (
-    <ComingSoon
-      milestone="M5 · à venir"
-      title="Gouvernance"
-      description="Instances de réunion (animateur, scribe, fréquence, durée, objectifs, docs IN/OUT) et matrice RACI."
+    <Governance
+      projectId={projectId}
+      canEdit={access.canEdit}
+      initial={data}
     />
   );
 }
