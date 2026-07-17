@@ -26,7 +26,7 @@ import {
   createProject,
   deleteFolder,
 } from "@/app/(app)/actions";
-import { SignOutButton } from "@/features/auth/SignOutButton";
+import { AccountMenu } from "@/features/auth/AccountMenu";
 
 export function Sidebar({
   folders,
@@ -139,14 +139,9 @@ export function Sidebar({
           )}
         </nav>
 
-        {/* Pied : compte */}
-        <div className="border-t border-border-soft px-4 py-3">
-          {userEmail && (
-            <p className="mb-2 truncate font-mono text-nano text-ink-3">
-              {userEmail}
-            </p>
-          )}
-          <SignOutButton />
+        {/* Pied : menu compte */}
+        <div className="border-t border-border-soft p-2">
+          <AccountMenu email={userEmail} />
         </div>
       </aside>
 

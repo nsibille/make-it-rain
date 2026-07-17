@@ -23,6 +23,9 @@ export const SLUGS = {
   raciCell: "raci-cell",
   roleRow: "role-row",
 
+  // Compte & auth
+  accountMenu: "account-menu",
+
   // Filesystem & projets
   sidebar: "sidebar",
   folderTree: "folder-tree",

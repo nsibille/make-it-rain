@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/client";
 import { Wordmark } from "@/components/ui/Wordmark";
 import { Button } from "@/components/ui/Button";
 import { FieldLabel, Input } from "@/components/ui/Field";
+import { PasswordStrength } from "@/features/auth/PasswordStrength";
 
 const MIN_PASSWORD = 8;
 
@@ -98,6 +99,7 @@ export default function ResetPasswordPage() {
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder={`${MIN_PASSWORD} caractères min.`}
                 />
+                <PasswordStrength value={password} min={MIN_PASSWORD} />
               </label>
               <label className="block">
                 <FieldLabel>Confirmer</FieldLabel>

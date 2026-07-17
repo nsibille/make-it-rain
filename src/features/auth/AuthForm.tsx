@@ -7,6 +7,7 @@ import { createClient } from "@/lib/supabase/client";
 import { Wordmark } from "@/components/ui/Wordmark";
 import { Button } from "@/components/ui/Button";
 import { FieldLabel, Input } from "@/components/ui/Field";
+import { PasswordStrength } from "@/features/auth/PasswordStrength";
 import { cn } from "@/lib/cn";
 
 type Mode = "signin" | "signup" | "forgot";
@@ -221,6 +222,9 @@ export function AuthForm({
                 {showPw ? <EyeOff size={14} aria-hidden /> : <Eye size={14} aria-hidden />}
               </button>
             </div>
+            {mode === "signup" && (
+              <PasswordStrength value={password} min={MIN_PASSWORD} />
+            )}
           </label>
         )}
 
