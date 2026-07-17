@@ -2,7 +2,24 @@ import "server-only";
 import { createClient } from "@/lib/supabase/server";
 import type { Json } from "@/lib/supabase/types";
 import type { Structure } from "@/features/breakdown/data";
-import { EXAMPLES, type ExampleProject, type ExampleTreeNode } from "@/data/examples";
+import type { Instance } from "@/features/governance/data";
+import {
+  EXAMPLE_PROJECTS,
+  type ExampleProject,
+  type GovInstance,
+  type TreeNode,
+} from "@/data/examples";
+
+/**
+ * Le schéma d'exemple porte `objectifs: string[]` (plusieurs objectifs par
+ * réunion) alors que le modèle gouvernance de l'app n'a qu'un `objectif`
+ * unique (une zone de texte). On fait le pont en joignant les objectifs, sans
+ * migration ni refonte de la gouvernance.
+ */
+function toInstance(gi: GovInstance): Instance {
+  const { objectifs, ...rest } = gi;
+  return { ...rest, objectif: objectifs.join("\n") };
+}
 
 type Supabase = Awaited<ReturnType<typeof createClient>>;
 
@@ -46,7 +63,7 @@ export async function seedExamplesIfEmpty(): Promise<void> {
     .single();
   if (!folder) return;
 
-  for (const ex of EXAMPLES) {
+  for (const ex of EXAMPLE_PROJECTS) {
     await seedProject(supabase, user.id, orgId, folder.id, ex);
   }
 }
@@ -66,7 +83,7 @@ async function seedProject(
       folder_id: folderId,
       name: ex.name,
       emoji: ex.emoji,
-      status: "published",
+      status: ex.status,
     })
     .select("id")
     .single();
@@ -98,19 +115,19 @@ async function seedProject(
     position: number;
     meta: Json;
   }[] = [];
-  ex.sixpack.objectives.forEach((label, i) =>
+  ex.sixpack.objectifs.forEach((label, i) =>
     items.push({ project_id: pid, kind: "objective", label, position: i, meta: {} }),
   );
-  ex.sixpack.deliverables.forEach((label, i) =>
+  ex.sixpack.livrables.forEach((label, i) =>
     items.push({ project_id: pid, kind: "deliverable", label, position: i, meta: {} }),
   );
-  ex.sixpack.scope_in.forEach((label, i) =>
+  ex.sixpack.perimetre.in.forEach((label, i) =>
     items.push({ project_id: pid, kind: "scope_in", label, position: i, meta: {} }),
   );
-  ex.sixpack.scope_out.forEach((label, i) =>
+  ex.sixpack.perimetre.out.forEach((label, i) =>
     items.push({ project_id: pid, kind: "scope_out", label, position: i, meta: {} }),
   );
-  ex.sixpack.stakeholders.forEach((s, i) =>
+  ex.sixpack.parties_prenantes.forEach((s, i) =>
     items.push({
       project_id: pid,
       kind: "stakeholder",
@@ -119,11 +136,11 @@ async function seedProject(
       meta: { role: s.role },
     }),
   );
-  ex.sixpack.milestones.forEach((m, i) =>
+  ex.sixpack.jalons.forEach((m, i) =>
     items.push({
       project_id: pid,
       kind: "milestone",
-      label: m.name,
+      label: m.label,
       position: i,
       meta: { date: m.date },
     }),
@@ -131,7 +148,7 @@ async function seedProject(
   if (items.length) await supabase.from("sixpack_items").insert(items);
 
   // Arbres : renomme la racine puis insère les enfants
-  const trees: [Structure, ExampleTreeNode][] = [
+  const trees: [Structure, TreeNode][] = [
     ["pbs", ex.pbs],
     ["wbs", ex.wbs],
     ["obs", ex.obs],
@@ -150,7 +167,7 @@ async function seedProject(
   await supabase
     .from("governance")
     .update({
-      instances: ex.governance.instances as unknown as Json,
+      instances: ex.governance.instances.map(toInstance) as unknown as Json,
       raci: ex.governance.raci as unknown as Json,
     })
     .eq("project_id", pid);
@@ -161,7 +178,7 @@ async function insertChildren(
   projectId: string,
   structure: Structure,
   parentId: string,
-  nodes: ExampleTreeNode[],
+  nodes: TreeNode[],
 ): Promise<void> {
   if (nodes.length === 0) return;
 

@@ -1,380 +1,433 @@
-import type { Instance, Raci } from "@/features/governance/data";
+/* ============================================================
+   examples.ts — contenu des 2 projets « Exemples » (seed M7).
+   Cloné dans le compte de l'utilisateur à la première connexion
+   (cf. CLAUDE_CODE_PROMPT.md · M7, via une Server Action).
 
-/**
- * Les deux exemples pizza (seed). Contenu rédigé pour la démo : même thème,
- * deux échelles. À cloner dans un dossier « Exemples » à la 1re connexion.
- * (Le prototype cadrage-studio.jsx d'origine n'étant pas fourni, ce contenu
- * est une reconstitution cohérente du même esprit.)
- */
+   Conforme au schéma final :
+   - 6-Pack : prose (contexte, contraintes) + listes (dont périmètre IN/OUT)
+   - Arbres : nesting par position ; les CODES (1.0 / 1.0.1 / 1.0.1.1) sont
+     calculés au rendu, jamais stockés. Profondeur = niveau :
+       root=N1 · enfants=N2 (x.0) · N3 · N4 · N5 = notes libres (tirets).
+   - OBS : chaque nœud porte meta.responsabilites (et meta.acteur).
+   - Gouvernance : une réunion = animateur, scribe, acteurs, fréquence,
+     durée, objectifs, docs_in, docs_out.
+   ============================================================ */
 
-export interface ExampleTreeNode {
+export type Stakeholder = { name: string; role: string };
+export type Milestone = { label: string; date: string };
+export type Scope = { in: string[]; out: string[] };
+
+export type Sixpack = {
+  contexte: string;
+  objectifs: string[];
+  livrables: string[];
+  parties_prenantes: Stakeholder[];
+  jalons: Milestone[];
+  perimetre: Scope;
+  contraintes: string;
+};
+
+export type NodeMeta = {
+  acteur?: string;
+  responsabilites?: string;
+  free?: boolean; // note libre N5 (indicatif ; le rendu se fie surtout à la profondeur)
+};
+export type TreeNode = {
   name: string;
-  meta?: Record<string, unknown>;
-  children?: ExampleTreeNode[];
-}
+  meta?: NodeMeta;
+  children?: TreeNode[];
+};
 
-export interface ExampleProject {
+export type GovInstance = {
+  name: string;
+  animateur: string;
+  scribe: string;
+  acteurs: string[];
+  frequence: string;
+  duree: string;
+  objectifs: string[];
+  docs_in: string[];
+  docs_out: string[];
+};
+export type RaciValue = "R" | "A" | "C" | "I" | "-";
+export type Governance = {
+  instances: GovInstance[];
+  raci: { roles: string[]; lots: { name: string; v: RaciValue[] }[] };
+};
+
+export type ExampleProject = {
+  slug: string;
+  code: string; // code racine N1, ex. "PZ-01"
   name: string;
   emoji: string;
-  sixpack: {
-    contexte: string;
-    contraintes: string;
-    objectives: string[];
-    deliverables: string[];
-    scope_in: string[];
-    scope_out: string[];
-    stakeholders: { name: string; role: string }[];
-    milestones: { name: string; date: string }[];
-  };
-  pbs: ExampleTreeNode;
-  wbs: ExampleTreeNode;
-  obs: ExampleTreeNode;
-  governance: { instances: Instance[]; raci: Raci };
-}
+  status: "draft" | "published" | "shared";
+  sixpack: Sixpack;
+  pbs: TreeNode;
+  wbs: TreeNode;
+  obs: TreeNode;
+  governance: Governance;
+};
 
-const resp = (responsabilites: string) => ({ responsabilites });
-
-// ── 🍕 Faire une pizza maison ─────────────────────────────
+/* ─────────────────────────────────────────────────────────────
+   PZ-02 · Faire une pizza maison (cas pédagogique)
+   ───────────────────────────────────────────────────────────── */
 const pizzaMaison: ExampleProject = {
+  slug: "faire-une-pizza-maison",
+  code: "PZ-02",
   name: "Faire une pizza maison",
   emoji: "🍕",
+  status: "published",
   sixpack: {
     contexte:
-      "Préparer un dîner pizza maison pour 4 personnes ce soir : bon, convivial et sans stress.",
+      "Recevoir 4 amis vendredi soir. Faire soi-même plutôt que commander : budget maîtrisé, plaisir de cuisiner, zéro stress au moment du service.",
+    objectifs: [
+      "Servir 2 pizzas maison réussies à 20h30",
+      "Coût total < 15 €",
+      "Cuisine rangée avant l'arrivée des invités",
+    ],
+    livrables: [
+      "Pâte maison reposée 2h",
+      "Pizza Margherita cuite",
+      "Pizza Reine cuite",
+      "Table dressée pour 5",
+    ],
+    parties_prenantes: [
+      { name: "Moi", role: "Chef de cuisine" },
+      { name: "Léa", role: "Sous-chef" },
+      { name: "Invités (×4)", role: "Convives" },
+      { name: "Épicier du coin", role: "Fournisseur" },
+    ],
+    jalons: [
+      { label: "Courses", date: "J-1" },
+      { label: "Pâte lancée", date: "J · 17h00" },
+      { label: "Garniture", date: "J · 19h00" },
+      { label: "Cuisson", date: "J · 20h00" },
+      { label: "Service", date: "J · 20h30" },
+    ],
+    perimetre: {
+      in: ["2 pizzas maison", "Boissons", "Dessert simple"],
+      out: ["Entrée", "Pain maison", "Livraison / commande extérieure"],
+    },
     contraintes:
-      "Budget ~20 €. Four ménager (max 250 °C). Un convive sans gluten. Prêt pour 20 h.",
-    objectives: [
-      "Servir 4 pizzas réussies à 20 h",
-      "Rester sous 20 € de budget",
-      "Proposer une option sans gluten",
-    ],
-    deliverables: [
-      "Pâte à pizza reposée",
-      "Sauce tomate maison",
-      "Pizzas cuites (dont une sans gluten)",
-      "Table dressée",
-    ],
-    scope_in: [
-      "Pizzas margherita et légumes",
-      "Préparation maison de la pâte et de la sauce",
-      "Dressage de la table",
-    ],
-    scope_out: [
-      "Dessert et boissons alcoolisées",
-      "Pizza à emporter / livraison",
-      "Vaisselle du lendemain",
-    ],
-    stakeholders: [
-      { name: "Chef (moi)", role: "Cuisinier" },
-      { name: "Sous-chef", role: "Aide" },
-      { name: "Convive végétarien", role: "Invité" },
-      { name: "Convive sans gluten", role: "Invité" },
-    ],
-    milestones: [
-      { name: "Courses terminées", date: "2026-07-17" },
-      { name: "Pâte prête (repos 1 h)", date: "2026-07-17" },
-      { name: "Cuisson", date: "2026-07-17" },
-      { name: "Service", date: "2026-07-17" },
-    ],
+      "Four domestique 250 °C max. Pâte à lancer 2h à l'avance. Un invité végétarien (Reine à adapter).",
   },
   pbs: {
-    name: "Dîner pizza",
+    name: "Dîner pizza réussi",
     children: [
       {
-        name: "Pâte",
-        children: [
-          {
-            name: "Base classique",
-            children: [
-              {
-                name: "Farine T55",
-                children: [{ name: "500 g" }, { name: "Tamiser" }],
-              },
-            ],
-          },
-          { name: "Base sans gluten" },
-        ],
-      },
-      {
-        name: "Garnitures",
-        children: [
-          { name: "Sauce tomate" },
-          { name: "Mozzarella" },
-          { name: "Légumes" },
-          { name: "Basilic" },
-        ],
-      },
-      {
         name: "Pizzas",
-        children: [
-          { name: "Margherita" },
-          { name: "Légumes" },
-          { name: "Sans gluten" },
-        ],
+        children: [{ name: "Pâte (base commune)" }, { name: "Margherita" }, { name: "Reine" }],
       },
       {
-        name: "Table",
-        children: [{ name: "Couverts" }, { name: "Boissons" }],
+        name: "Accompagnements",
+        children: [{ name: "Boissons" }, { name: "Salade verte" }, { name: "Dessert" }],
+      },
+      {
+        name: "Mise en table",
+        children: [{ name: "Couverts & assiettes" }, { name: "Ambiance (musique, lumière)" }],
       },
     ],
   },
   wbs: {
-    name: "Faire le dîner pizza",
+    name: "Faire une pizza maison",
     children: [
       {
-        name: "Préparer",
+        name: "Préparation",
         children: [
-          { name: "Faire les courses" },
           {
-            name: "Préparer la pâte",
+            name: "Menu & courses",
             children: [
+              { name: "Établir le menu" },
               {
-                name: "Pétrir",
-                children: [{ name: "10 min" }, { name: "Repos 1 h" }],
+                name: "Faire les courses",
+                children: [
+                  { name: "Vérifier le stock de farine", meta: { free: true } },
+                  { name: "Acheter mozzarella di bufala", meta: { free: true } },
+                ],
               },
             ],
           },
-          { name: "Préparer la sauce" },
         ],
       },
       {
-        name: "Garnir",
+        name: "Pâte",
+        children: [{ name: "Pétrir" }, { name: "Laisser reposer 2h" }, { name: "Étaler" }],
+      },
+      {
+        name: "Garniture & cuisson",
         children: [
-          { name: "Étaler la pâte" },
-          { name: "Garnir margherita" },
-          { name: "Garnir légumes" },
+          { name: "Préparer sauce & toppings" },
+          { name: "Garnir les pizzas" },
+          {
+            name: "Cuire",
+            children: [{ name: "Préchauffer le four" }, { name: "Enfourner & surveiller" }],
+          },
         ],
       },
       {
-        name: "Cuire",
-        children: [
-          { name: "Préchauffer le four" },
-          { name: "Enfourner" },
-          { name: "Surveiller la cuisson" },
-        ],
-      },
-      {
-        name: "Servir",
-        children: [{ name: "Dresser la table" }, { name: "Servir chaud" }],
+        name: "Service",
+        children: [{ name: "Dresser la table" }, { name: "Servir & ranger" }],
       },
     ],
   },
   obs: {
-    name: "Organisation",
+    name: "Soirée pizza",
     children: [
       {
-        name: "Chef (moi)",
-        meta: resp("Pilote le dîner, prépare la pâte et gère la cuisson."),
+        name: "Chef · Moi",
+        meta: { acteur: "Moi", responsabilites: "Pâte, cuisson, coordination générale et timing." },
+        children: [
+          {
+            name: "Cuisson",
+            meta: { acteur: "Moi", responsabilites: "Préchauffe, enfournage, surveillance de cuisson." },
+          },
+        ],
       },
       {
-        name: "Sous-chef",
-        meta: resp("Prépare les garnitures et dresse la table."),
+        name: "Sous-chef · Léa",
+        meta: { acteur: "Léa", responsabilites: "Garnitures, découpe, dressage, vaisselle." },
       },
       {
         name: "Intendance",
-        meta: resp("Courses et respect du budget."),
+        meta: { acteur: "Moi + Invités", responsabilites: "Courses, boissons, dessert." },
       },
     ],
   },
   governance: {
     instances: [
       {
+        name: "Brief apéro",
+        animateur: "Moi",
+        scribe: "Léa",
+        acteurs: ["Moi", "Léa"],
+        frequence: "J-1 (ponctuel)",
+        duree: "15 min",
+        objectifs: ["Valider le menu et le budget", "Répartir les courses"],
+        docs_in: ["Liste d'invités", "Budget indicatif"],
+        docs_out: ["Menu validé", "Liste de courses"],
+      },
+      {
         name: "Point cuisine",
-        animateur: "Chef (moi)",
-        scribe: "Sous-chef",
-        acteurs: ["Chef (moi)", "Sous-chef"],
-        frequence: "Unique",
+        animateur: "Moi",
+        scribe: "Léa",
+        acteurs: ["Moi", "Léa"],
+        frequence: "Jour J · 19h",
+        duree: "5 min",
+        objectifs: ["Se caler sur la garniture et la cuisson"],
+        docs_in: ["Menu validé"],
+        docs_out: ["Top départ cuisson"],
+      },
+      {
+        name: "Retour d'expérience",
+        animateur: "Léa",
+        scribe: "Moi",
+        acteurs: ["Moi", "Léa", "Invités"],
+        frequence: "J+1",
         duree: "10 min",
-        objectif: "Répartir les tâches et valider le timing du dîner.",
-        docs_in: ["Liste de courses", "Recettes"],
-        docs_out: ["Planning de cuisson"],
+        objectifs: ["Identifier ce qu'on améliore la prochaine fois"],
+        docs_in: [],
+        docs_out: ["Notes d'amélioration"],
       },
     ],
     raci: {
       roles: ["Chef", "Sous-chef", "Invités"],
       lots: [
-        { name: "Courses", v: ["A", "R", "I"] },
-        { name: "Pâte", v: ["R", "C", "I"] },
-        { name: "Garnitures", v: ["C", "R", "I"] },
-        { name: "Cuisson", v: ["R", "C", "I"] },
-        { name: "Service", v: ["A", "R", "C"] },
+        { name: "Menu & courses", v: ["A", "C", "I"] },
+        { name: "Pâte", v: ["R", "C", "-"] },
+        { name: "Garniture", v: ["C", "R", "-"] },
+        { name: "Cuisson", v: ["R", "C", "-"] },
+        { name: "Service & rangement", v: ["A", "R", "C"] },
       ],
     },
   },
 };
 
-// ── 🏪 Ouvrir une pizzeria ────────────────────────────────
+/* ─────────────────────────────────────────────────────────────
+   PZ-01 · Ouvrir une pizzeria (cas à l'échelle entreprise)
+   ───────────────────────────────────────────────────────────── */
 const pizzeria: ExampleProject = {
+  slug: "ouvrir-une-pizzeria",
+  code: "PZ-01",
   name: "Ouvrir une pizzeria",
   emoji: "🏪",
+  status: "shared",
   sixpack: {
     contexte:
-      "Ouvrir une pizzeria de quartier (30 couverts) d'ici 6 mois : financement, travaux, légal, recrutement et ouverture.",
-    contraintes:
-      "Budget 120 k€. Bail à signer sous 2 mois. Normes ERP et hygiène (HACCP). Ouverture avant la rentrée.",
-    objectives: [
+      "Ouverture d'une pizzeria artisanale de 30 couverts dans le 11e à Paris. Marché porteur mais concurrence forte : la différenciation se joue sur la qualité produit et l'expérience en salle.",
+    objectifs: [
       "Ouvrir dans 6 mois",
-      "Rester sous 120 k€ d'investissement",
-      "Atteindre 60 couverts/jour à 3 mois",
-      "Obtenir toutes les autorisations légales",
+      "Atteindre le seuil de rentabilité à M+9",
+      "Note Google ≥ 4,5",
+      "Ticket moyen 22 €",
     ],
-    deliverables: [
-      "Local aménagé et équipé",
-      "Licences et autorisations",
+    livrables: [
+      "Local aménagé et aux normes ERP",
+      "Carte et sourcing arrêtés",
       "Équipe recrutée et formée",
-      "Carte et fournisseurs sélectionnés",
-      "Plan de communication d'ouverture",
+      "Licences et autorisations obtenues",
+      "Plan marketing d'ouverture",
     ],
-    scope_in: [
-      "Restauration sur place et à emporter",
-      "Pizzas au feu de bois",
-      "Recrutement d'une équipe de 5",
-      "Aménagement du local",
+    parties_prenantes: [
+      { name: "Fondateur", role: "Gérant / sponsor" },
+      { name: "Chef pizzaïolo", role: "Exploitation" },
+      { name: "Investisseurs", role: "Financement" },
+      { name: "Mairie / ERP", role: "Autorité" },
+      { name: "Fournisseurs", role: "Sourcing" },
+      { name: "Comptable", role: "Support finances" },
     ],
-    scope_out: [
-      "Livraison à domicile (phase 2)",
-      "Franchise / second établissement",
-      "Vente de produits en épicerie",
+    jalons: [
+      { label: "Bail signé", date: "M0" },
+      { label: "Travaux lancés", date: "M2" },
+      { label: "Recrutement", date: "M4" },
+      { label: "Licences OK", date: "M5" },
+      { label: "Soft opening", date: "M5,5" },
+      { label: "Ouverture", date: "M6" },
     ],
-    stakeholders: [
-      { name: "Gérant", role: "Porteur de projet" },
-      { name: "Chef pizzaïolo", role: "Production" },
-      { name: "Expert-comptable", role: "Finance" },
-      { name: "Architecte", role: "Travaux" },
-      { name: "Banque", role: "Financement" },
-      { name: "Mairie", role: "Autorisations" },
-    ],
-    milestones: [
-      { name: "Bail signé", date: "2026-08-15" },
-      { name: "Financement obtenu", date: "2026-09-01" },
-      { name: "Travaux terminés", date: "2026-11-30" },
-      { name: "Équipe recrutée", date: "2026-12-15" },
-      { name: "Ouverture", date: "2027-01-10" },
-    ],
+    perimetre: {
+      in: ["Service sur place (30 couverts)", "Vente à emporter", "Carte pizzas + desserts"],
+      out: ["Livraison (phase 2)", "Franchise", "Cuisine centrale", "Bar à cocktails"],
+    },
+    contraintes:
+      "Budget 85 k€. Normes ERP catégorie 5. Délai fournisseur du four à bois. Trésorerie tendue avant ouverture. Autorisation de terrasse incertaine.",
   },
   pbs: {
-    name: "Pizzeria",
+    name: "Pizzeria opérationnelle",
     children: [
       {
         name: "Local",
         children: [
-          { name: "Salle (30 couverts)" },
-          {
-            name: "Cuisine",
-            children: [
-              {
-                name: "Four à bois",
-                children: [{ name: "Feu de bois" }, { name: "Certifié ERP" }],
-              },
-            ],
-          },
-          { name: "Sanitaires" },
+          { name: "Cuisine (four, froid, plonge)" },
+          { name: "Salle (mobilier, comptoir)" },
+          { name: "Sanitaires & normes ERP" },
         ],
       },
       {
         name: "Offre",
-        children: [
-          { name: "Carte pizzas" },
-          { name: "Boissons" },
-          { name: "Desserts" },
-        ],
-      },
-      {
-        name: "Légal",
-        children: [
-          { name: "Licence restauration" },
-          { name: "Enregistrement HACCP" },
-          { name: "Assurances" },
-        ],
+        children: [{ name: "Carte pizzas" }, { name: "Boissons & desserts" }, { name: "Caisse & menus" }],
       },
       {
         name: "Marque",
         children: [
-          { name: "Nom & logo" },
-          { name: "Site & réseaux sociaux" },
+          { name: "Identité visuelle" },
+          { name: "Site & réseaux" },
+          { name: "Enseigne & signalétique" },
+        ],
+      },
+      {
+        name: "Cadre légal",
+        children: [
+          { name: "Licences" },
+          { name: "Autorisations ERP / terrasse" },
+          { name: "Contrats (bail, fournisseurs)" },
         ],
       },
     ],
   },
   wbs: {
-    name: "Ouvrir la pizzeria",
+    name: "Ouvrir une pizzeria",
     children: [
       {
-        name: "Financer",
-        children: [
-          { name: "Business plan" },
-          { name: "Prêt bancaire" },
-          { name: "Aides & subventions" },
-        ],
+        name: "Cadrage & financement",
+        children: [{ name: "Business plan" }, { name: "Levée de fonds" }, { name: "Création de la société" }],
       },
       {
-        name: "Aménager",
+        name: "Local & travaux",
         children: [
-          { name: "Signer le bail" },
           {
-            name: "Travaux",
+            name: "Bail & légal local",
             children: [
+              { name: "Négocier le bail" },
               {
-                name: "Gros œuvre",
-                children: [{ name: "Devis validé" }, { name: "Permis déposé" }],
+                name: "Signer le bail",
+                children: [
+                  { name: "Vérifier la clause travaux", meta: { free: true } },
+                  { name: "Dépôt de garantie 3 mois", meta: { free: true } },
+                ],
               },
             ],
           },
-          { name: "Équipement cuisine" },
+          {
+            name: "Aménagement",
+            children: [{ name: "Plomberie" }, { name: "Électricité" }, { name: "Conformité ERP" }],
+          },
+          {
+            name: "Équipements",
+            children: [{ name: "Four à bois" }, { name: "Froid & plonge" }],
+          },
         ],
       },
       {
-        name: "Légaliser",
+        name: "Offre & sourcing",
         children: [
-          { name: "Créer la société" },
-          { name: "Obtenir les licences" },
-          { name: "Plan HACCP" },
+          { name: "Concevoir la carte" },
+          { name: "Référencer les fournisseurs" },
+          { name: "Tester les recettes" },
         ],
       },
       {
-        name: "Recruter",
-        children: [
-          { name: "Chef pizzaïolo" },
-          { name: "Équipe de salle" },
-          { name: "Formation hygiène" },
-        ],
+        name: "Équipe",
+        children: [{ name: "Recruter" }, { name: "Former" }, { name: "Planifier les shifts" }],
       },
       {
-        name: "Lancer",
+        name: "Légal & conformité",
+        children: [{ name: "Licences & déclarations" }, { name: "Hygiène (HACCP)" }, { name: "Assurances" }],
+      },
+      {
+        name: "Marketing & ouverture",
         children: [
-          { name: "Communication" },
+          { name: "Identité & site" },
+          { name: "Pré-ouverture & communauté" },
           { name: "Soft opening" },
-          { name: "Inauguration" },
+          { name: "Ouverture officielle" },
         ],
       },
     ],
   },
   obs: {
-    name: "Organisation",
+    name: "Projet Pizzeria",
     children: [
       {
-        name: "Gérant",
-        meta: resp("Pilotage global, financement et décisions stratégiques."),
+        name: "Direction · Fondateur",
+        meta: {
+          acteur: "Fondateur",
+          responsabilites: "Pilotage global, financement, arbitrages, relation investisseurs.",
+        },
         children: [
           {
-            name: "Chef pizzaïolo",
-            meta: resp("Cuisine, carte et hygiène HACCP."),
-            children: [
-              { name: "Commis", meta: resp("Préparation et aide à la cuisson.") },
-            ],
-          },
-          {
-            name: "Responsable salle",
-            meta: resp("Service, encaissement et équipe de salle."),
-            children: [
-              { name: "Serveur", meta: resp("Accueil et service des clients.") },
-            ],
+            name: "Pilotage & finance",
+            meta: { acteur: "Fondateur", responsabilites: "Budget, trésorerie, reporting au COPIL." },
           },
         ],
       },
       {
-        name: "Expert-comptable (externe)",
-        meta: resp("Comptabilité, paie et déclarations légales."),
+        name: "Exploitation · Chef pizzaïolo",
+        meta: {
+          acteur: "Chef pizzaïolo",
+          responsabilites: "Carte, sourcing, cuisine, encadrement de l'équipe cuisine.",
+        },
+        children: [
+          {
+            name: "Équipe de salle",
+            meta: { acteur: "Maître de salle", responsabilites: "Service, encaissement, expérience client." },
+          },
+        ],
+      },
+      {
+        name: "Support",
+        children: [
+          {
+            name: "Comptable",
+            meta: { acteur: "Comptable", responsabilites: "Comptabilité, paie, déclarations sociales et fiscales." },
+          },
+          {
+            name: "Agence marketing",
+            meta: { acteur: "Agence", responsabilites: "Identité, site, campagne d'ouverture." },
+          },
+          {
+            name: "Maître d'œuvre",
+            meta: { acteur: "Maître d'œuvre", responsabilites: "Coordination des travaux, conformité ERP, réception de chantier." },
+          },
+        ],
       },
     ],
   },
@@ -382,50 +435,51 @@ const pizzeria: ExampleProject = {
     instances: [
       {
         name: "Comité de pilotage (COPIL)",
-        animateur: "Gérant",
-        scribe: "Expert-comptable",
-        acteurs: ["Gérant", "Chef pizzaïolo", "Expert-comptable", "Architecte"],
+        animateur: "Fondateur",
+        scribe: "Comptable",
+        acteurs: ["Fondateur", "Investisseurs", "Comptable"],
         frequence: "Mensuel",
-        duree: "90 min",
-        objectif: "Suivre l'avancement, le budget et les risques du projet.",
-        docs_in: ["Tableau de bord", "Suivi budgétaire"],
-        docs_out: ["Relevé de décisions", "Plan d'actions"],
+        duree: "60 min",
+        objectifs: ["Arbitrer budget et planning", "Valider les jalons", "Décider sur les risques majeurs"],
+        docs_in: ["Reporting d'avancement", "Suivi budgétaire", "Registre des risques"],
+        docs_out: ["Relevé de décisions", "Budget réajusté"],
       },
       {
-        name: "Comité travaux",
-        animateur: "Architecte",
-        scribe: "Gérant",
-        acteurs: ["Architecte", "Gérant", "Entreprise BTP"],
+        name: "Comité projet (COPROJ)",
+        animateur: "Fondateur",
+        scribe: "Maître d'œuvre",
+        acteurs: ["Fondateur", "Maître d'œuvre", "Chef pizzaïolo"],
         frequence: "Hebdomadaire",
         duree: "45 min",
-        objectif: "Piloter le chantier et lever les blocages.",
-        docs_in: ["Planning chantier"],
-        docs_out: ["Compte-rendu de chantier"],
+        objectifs: ["Suivre l'avancement des chantiers", "Lever les blocages"],
+        docs_in: ["Planning travaux", "Comptes-rendus fournisseurs"],
+        docs_out: ["Actions de la semaine", "Plan de rattrapage"],
       },
       {
-        name: "Point opérationnel",
+        name: "Stand-up ouverture",
         animateur: "Chef pizzaïolo",
-        scribe: "Responsable salle",
-        acteurs: ["Chef pizzaïolo", "Responsable salle"],
-        frequence: "Hebdomadaire",
-        duree: "30 min",
-        objectif: "Préparer l'ouverture : carte, équipe et check-list.",
-        docs_in: ["Carte", "Planning équipe"],
-        docs_out: ["Check-list ouverture"],
+        scribe: "Maître de salle",
+        acteurs: ["Équipe complète"],
+        frequence: "Quotidien (M-1)",
+        duree: "15 min",
+        objectifs: ["Coordonner la mise en route opérationnelle"],
+        docs_in: ["Checklist d'ouverture"],
+        docs_out: ["Points bloquants du jour"],
       },
     ],
     raci: {
-      roles: ["Gérant", "Chef", "Resp. salle", "Comptable"],
+      roles: ["Fondateur", "Chef", "Support"],
       lots: [
-        { name: "Financement", v: ["R", "I", "I", "C"] },
-        { name: "Travaux", v: ["A", "C", "I", "I"] },
-        { name: "Recrutement", v: ["A", "C", "C", "I"] },
-        { name: "Carte", v: ["C", "R", "C", "I"] },
-        { name: "Légal / HACCP", v: ["A", "C", "I", "R"] },
-        { name: "Ouverture", v: ["A", "R", "R", "I"] },
+        { name: "Financement", v: ["A", "I", "C"] },
+        { name: "Travaux", v: ["A", "C", "R"] },
+        { name: "Carte & sourcing", v: ["C", "R", "I"] },
+        { name: "Recrutement", v: ["A", "R", "C"] },
+        { name: "Légal & conformité", v: ["A", "I", "R"] },
+        { name: "Ouverture", v: ["A", "R", "C"] },
       ],
     },
   },
 };
 
-export const EXAMPLES: ExampleProject[] = [pizzaMaison, pizzeria];
+/* Ordre d'affichage : le cas simple d'abord (pédagogie), puis l'échelle entreprise. */
+export const EXAMPLE_PROJECTS: ExampleProject[] = [pizzaMaison, pizzeria];
