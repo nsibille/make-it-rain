@@ -7,16 +7,18 @@
    donc tokens.css reste l'unique source de vérité.
    ============================================================ */
 @theme inline {
-  /* Couleurs → bg-*, text-*, border-* */
-  --color-surface:   var(--surface);
-  --color-surface-2: var(--surface-2);
-  --color-surface-3: var(--surface-3);
+  /* ── Couleurs → bg-*, text-*, border-*, ring-* ───────────── */
+  --color-bg:            var(--bg);
+  --color-surface:       var(--surface);
+  --color-surface-2:     var(--surface-2);
+  --color-surface-3:     var(--surface-3);
 
   --color-ink:   var(--ink);
   --color-ink-1: var(--ink-1);
   --color-ink-2: var(--ink-2);
   --color-ink-3: var(--ink-3);
   --color-ink-4: var(--ink-4);
+  --color-ink-5: var(--ink-5);
 
   --color-brand:  var(--brand);
   --color-danger: var(--danger);
@@ -25,52 +27,128 @@
   --color-border-strong: var(--border-strong);
   --color-border-soft:   var(--border-soft);
 
+  /* PBS / WBS / OBS */
   --color-pbs:      var(--pbs);
   --color-pbs-soft: var(--pbs-soft);
+  --color-pbs-line: var(--pbs-line);
   --color-pbs-text: var(--pbs-text);
   --color-wbs:      var(--wbs);
   --color-wbs-soft: var(--wbs-soft);
+  --color-wbs-line: var(--wbs-line);
   --color-wbs-text: var(--wbs-text);
   --color-obs:      var(--obs);
   --color-obs-soft: var(--obs-soft);
+  --color-obs-line: var(--obs-line);
   --color-obs-text: var(--obs-text);
 
+  /* RACI */
   --color-raci-r: var(--raci-r);
   --color-raci-r-soft: var(--raci-r-soft);
+  --color-raci-r-line: var(--raci-r-line);
   --color-raci-r-text: var(--raci-r-text);
   --color-raci-a: var(--raci-a);
   --color-raci-a-soft: var(--raci-a-soft);
+  --color-raci-a-line: var(--raci-a-line);
   --color-raci-a-text: var(--raci-a-text);
   --color-raci-c: var(--raci-c);
   --color-raci-c-soft: var(--raci-c-soft);
+  --color-raci-c-line: var(--raci-c-line);
   --color-raci-c-text: var(--raci-c-text);
   --color-raci-i: var(--raci-i);
   --color-raci-i-soft: var(--raci-i-soft);
+  --color-raci-i-line: var(--raci-i-line);
   --color-raci-i-text: var(--raci-i-text);
 
-  --color-status-progress: var(--status-progress);
-  --color-status-blocked:  var(--status-blocked);
-  --color-status-waiting:  var(--status-waiting);
-  --color-status-done:     var(--status-done);
+  /* État */
+  --color-status-draft:      var(--status-draft);
+  --color-status-draft-soft: var(--status-draft-soft);
+  --color-status-draft-line: var(--status-draft-line);
+  --color-status-draft-text: var(--status-draft-text);
+  --color-status-progress:      var(--status-progress);
+  --color-status-progress-soft: var(--status-progress-soft);
+  --color-status-progress-line: var(--status-progress-line);
+  --color-status-progress-text: var(--status-progress-text);
+  --color-status-blocked:      var(--status-blocked);
+  --color-status-blocked-soft: var(--status-blocked-soft);
+  --color-status-blocked-line: var(--status-blocked-line);
+  --color-status-blocked-text: var(--status-blocked-text);
+  --color-status-waiting:      var(--status-waiting);
+  --color-status-waiting-soft: var(--status-waiting-soft);
+  --color-status-waiting-line: var(--status-waiting-line);
+  --color-status-waiting-text: var(--status-waiting-text);
+  --color-status-done:      var(--status-done);
+  --color-status-done-soft: var(--status-done-soft);
+  --color-status-done-line: var(--status-done-line);
+  --color-status-done-text: var(--status-done-text);
 
-  --color-risk-low:  var(--risk-low);
-  --color-risk-med:  var(--risk-med);
-  --color-risk-high: var(--risk-high);
+  /* Risque */
+  --color-risk-low:      var(--risk-low);
+  --color-risk-low-soft: var(--risk-low-soft);
+  --color-risk-low-line: var(--risk-low-line);
+  --color-risk-med:      var(--risk-med);
+  --color-risk-med-soft: var(--risk-med-soft);
+  --color-risk-med-line: var(--risk-med-line);
+  --color-risk-high:      var(--risk-high);
+  --color-risk-high-soft: var(--risk-high-soft);
+  --color-risk-high-line: var(--risk-high-line);
+
+  /* Équipe (catégoriels) */
+  --color-team-1: var(--team-1); --color-team-1-soft: var(--team-1-soft); --color-team-1-line: var(--team-1-line);
+  --color-team-2: var(--team-2); --color-team-2-soft: var(--team-2-soft); --color-team-2-line: var(--team-2-line);
+  --color-team-3: var(--team-3); --color-team-3-soft: var(--team-3-soft); --color-team-3-line: var(--team-3-line);
+  --color-team-4: var(--team-4); --color-team-4-soft: var(--team-4-soft); --color-team-4-line: var(--team-4-line);
+  --color-team-5: var(--team-5); --color-team-5-soft: var(--team-5-soft); --color-team-5-line: var(--team-5-line);
+  --color-team-6: var(--team-6); --color-team-6-soft: var(--team-6-soft); --color-team-6-line: var(--team-6-line);
+
+  /* Projet */
+  --color-project-a: var(--project-a);
+  --color-project-b: var(--project-b);
 
   --color-graph-connector: var(--graph-connector);
 
-  /* Polices → font-sans, font-mono */
+  /* ── Polices → font-sans, font-mono ──────────────────────── */
   --font-sans: var(--font-sans-stack);
   --font-mono: var(--font-mono-stack);
 
-  /* Rayons → rounded-chip / rounded-node / rounded-pop */
-  --radius-chip: var(--radius-chip);
-  --radius-node: var(--radius-node);
-  --radius-pop:  var(--radius-pop);
+  /* ── Échelle typo → text-display … text-nano ──────────────
+     (LE correctif : sans ce mapping, ces utilitaires n'existaient
+      pas et tout retombait sur le 16px par défaut du navigateur.) */
+  --text-display: var(--fs-display);
+  --text-display--line-height: var(--lh-display);
+  --text-display--letter-spacing: var(--tracking-tight);
+  --text-display--font-weight: 600;
 
-  /* Ombres → shadow-1 / shadow-2 */
+  --text-title: var(--fs-title);
+  --text-title--line-height: var(--lh-title);
+  --text-title--letter-spacing: var(--tracking-title);
+  --text-title--font-weight: 600;
+
+  --text-section: var(--fs-section);
+  --text-section--line-height: var(--lh-section);
+  --text-section--font-weight: 600;
+
+  --text-body: var(--fs-body);
+  --text-body--line-height: var(--lh-body);
+
+  --text-caption: var(--fs-caption);
+  --text-caption--line-height: var(--lh-caption);
+
+  --text-micro: var(--fs-micro);
+  --text-micro--line-height: var(--lh-micro);
+
+  --text-nano: var(--fs-nano);
+  --text-nano--line-height: var(--lh-nano);
+
+  /* ── Rayons → rounded-chip / node / pop / shell ──────────── */
+  --radius-chip:  var(--radius-chip);
+  --radius-node:  var(--radius-node);
+  --radius-pop:   var(--radius-pop);
+  --radius-shell: var(--radius-shell);
+
+  /* ── Ombres → shadow-1 / shadow-2 / shadow-3 ─────────────── */
   --shadow-1: var(--shadow-1);
   --shadow-2: var(--shadow-2);
+  --shadow-3: var(--shadow-3);
 }
 
 /* ── Base ─────────────────────────────────────────────────── */
@@ -79,11 +157,43 @@ html {
 }
 
 body {
-  background: var(--surface);
+  background: var(--bg);
   color: var(--ink);
   font-family: var(--font-sans-stack);
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
+  font-feature-settings: "kern" 1;
+}
+
+/* Sélection & scrollbars fines (touche premium de la référence). */
+::selection {
+  background: oklch(0.90 0.04 258);
+}
+::-webkit-scrollbar {
+  width: 9px;
+  height: 9px;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border-strong);
+  border-radius: 6px;
+  border: 2px solid var(--bg);
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* Label mono en MAJUSCULES (DESIGN_SYSTEM §Typographie) : 10px par défaut,
+   les appelants peuvent resserrer via text-nano (8.5px). */
+.label-mono {
+  font-family: var(--font-mono-stack);
+  font-size: var(--fs-micro);
+  line-height: var(--lh-micro);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-label);
+  color: var(--ink-3);
 }
 
 /* Titre de nœud éditable (contenteditable) : placeholder si vide */
@@ -91,14 +201,6 @@ body {
   content: attr(data-placeholder);
   color: var(--ink-4);
   pointer-events: none;
-}
-
-/* Label mono en MAJUSCULES (DESIGN_SYSTEM §Typographie) */
-.label-mono {
-  font-family: var(--font-mono-stack);
-  text-transform: uppercase;
-  letter-spacing: 0.14em;
-  color: var(--ink-3);
 }
 
 /* Accessibilité : focus clavier visible + reduced-motion (plancher qualité) */

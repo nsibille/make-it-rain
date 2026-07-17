@@ -1,4 +1,4 @@
-# DESIGN_SYSTEM.md — Cadrage Studio
+# DESIGN_SYSTEM.md — Stuudio
 
 > **Source de vérité visuelle = le Design System généré (Claude Design).**
 > Tokens : `src/styles/tokens.css` → thème Tailwind : `src/app/globals.css`.

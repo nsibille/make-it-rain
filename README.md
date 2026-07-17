@@ -1,4 +1,4 @@
-# Cadrage Studio
+# Stuudio
 
 Outil de cadrage projet pour PMO : on entre un brief structuré (le **6-Pack**),
 l'app produit des **arborescences** claires (PBS, WBS, OBS) et un **schéma de
@@ -11,8 +11,12 @@ Auth / RLS / Realtime) · TanStack Query · Zustand · `d3-hierarchy` ·
 lucide-react. Déploiement Vercel.
 
 Le design system est piloté par les tokens `src/styles/tokens.css` (mappés en
-thème Tailwind dans `src/app/globals.css`). Aucune couleur/typo n'est codée en
-dur.
+thème Tailwind dans `src/app/globals.css` via `@theme` — **c'est ce mapping qui
+génère l'échelle typo `text-display…text-nano` et les familles de couleurs** ;
+sans lui les utilitaires n'existent pas). Primitives dans `src/components/ui/`
+(Button, Card, Chip, StatusBadge, Avatar, Field, Metric, ProgressBar, RaciCell,
+Wordmark…). Référence visuelle : `design/design-system-reference.html`. Aucune
+couleur/typo n'est codée en dur.
 
 ## Développement local
 

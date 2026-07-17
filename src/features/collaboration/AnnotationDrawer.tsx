@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { Send, Trash2, X } from "lucide-react";
+import { Button } from "@/components/ui/Button";
+import { Textarea } from "@/components/ui/Field";
 import { SLUGS } from "@/lib/slugs";
 import { useAnnotations } from "./AnnotationsProvider";
 
@@ -104,7 +106,7 @@ export function AnnotationDrawer() {
 
         {canAnnotate ? (
           <div className="border-t border-border-soft p-3">
-            <textarea
+            <Textarea
               value={draft}
               onChange={(e) => setDraft(e.target.value)}
               onKeyDown={(e) => {
@@ -114,18 +116,15 @@ export function AnnotationDrawer() {
                 }
               }}
               rows={2}
+              className="resize-none"
               placeholder="Ajouter un commentaire…"
-              className="w-full resize-none rounded-node border border-border bg-surface px-3 py-2 text-body text-ink outline-none focus:border-border-strong focus:bg-surface-2"
             />
             <div className="mt-2 flex items-center justify-between">
               <span className="font-mono text-nano text-ink-4">⌘+↵</span>
-              <button
-                onClick={send}
-                className="inline-flex items-center gap-1.5 rounded-node bg-brand px-3 py-1.5 text-caption font-medium text-surface hover:bg-ink-1"
-              >
+              <Button size="sm" onClick={send}>
                 <Send size={13} aria-hidden />
                 Envoyer
-              </button>
+              </Button>
             </div>
           </div>
         ) : (

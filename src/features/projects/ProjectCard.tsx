@@ -31,16 +31,16 @@ export function ProjectCard({ project }: { project: Project }) {
   return (
     <article
       data-slug={SLUGS.projectCard}
-      className="flex flex-col rounded-node border border-border bg-surface p-4 shadow-1"
+      className="flex flex-col rounded-pop border border-border bg-surface p-4 transition-colors hover:border-border-strong"
     >
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-center gap-2.5">
-          <span aria-hidden className="text-title leading-none">
+          <span aria-hidden className="text-[22px] leading-none">
             {project.emoji ?? "📁"}
           </span>
           <h3 className="text-section text-ink">{project.name}</h3>
         </div>
-        <StatusBadge label={status.label} dotClassName={status.dot} />
+        <StatusBadge tone={status.tone} label={status.label} />
       </div>
 
       <p className="mt-3 font-mono text-nano text-ink-4">
@@ -57,7 +57,7 @@ export function ProjectCard({ project }: { project: Project }) {
       <div className="mt-4 flex items-center gap-2 border-t border-border-soft pt-3">
         <Link
           href={`/p/${project.id}`}
-          className="inline-flex items-center gap-1.5 rounded-node bg-brand px-3 py-1.5 text-caption font-medium text-surface transition-colors hover:bg-ink-1"
+          className="inline-flex items-center gap-1.5 rounded-node border border-ink bg-ink px-[13px] py-[6px] text-caption font-medium text-surface transition-colors hover:bg-ink-1"
         >
           Ouvrir
           <ArrowRight size={13} aria-hidden />

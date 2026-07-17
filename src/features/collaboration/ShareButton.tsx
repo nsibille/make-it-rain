@@ -4,6 +4,7 @@ import { useState, useTransition } from "react";
 import { Share2, Trash2, UserPlus } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Modal } from "@/components/ui/Modal";
+import { FieldLabel, Input, Select } from "@/components/ui/Field";
 import { SLUGS } from "@/lib/slugs";
 import type { Member } from "./members";
 import { changeMemberRole, inviteMember, removeMember } from "./actions";
@@ -56,35 +57,33 @@ export function ShareButton({
         <div data-slug={SLUGS.inviteModal}>
           <form onSubmit={submitInvite} className="space-y-3">
             <label className="block">
-              <span className="label-mono text-nano">Email de l’invité</span>
-              <input
+              <FieldLabel>Email de l’invité</FieldLabel>
+              <Input
                 type="email"
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="collegue@entreprise.fr"
-                className="mt-1.5 w-full rounded-node border border-border bg-surface px-3 py-2 text-body text-ink outline-none focus:border-border-strong focus:bg-surface-2"
               />
             </label>
 
             <label className="block">
-              <span className="label-mono text-nano">Rôle</span>
-              <select
+              <FieldLabel>Rôle</FieldLabel>
+              <Select
                 value={role}
                 onChange={(e) => setRole(e.target.value as InviteRole)}
-                className="mt-1.5 w-full rounded-node border border-border bg-surface px-3 py-2 text-body text-ink outline-none focus:border-border-strong"
               >
                 <option value="annotator">Annotateur — lit et commente</option>
                 <option value="observer">Observateur — lecture seule</option>
-              </select>
+              </Select>
             </label>
 
             {feedback && (
               <p
                 className={
                   feedback.ok
-                    ? "text-body text-status-done"
-                    : "text-body text-danger"
+                    ? "text-caption text-status-done-text"
+                    : "text-caption text-status-blocked-text"
                 }
               >
                 {feedback.message}

@@ -6,16 +6,21 @@
  */
 export const SLUGS = {
   // Design system / primitives
+  wordmark: "wordmark",
   button: "button",
+  card: "card",
   chip: "chip",
+  avatar: "avatar",
   statusBadge: "status-badge",
   metric: "metric",
   progressBar: "progress-bar",
   segmented: "segmented",
+  tabs: "tabs",
   field: "field",
   modal: "modal",
   popover: "popover",
   table: "table",
+  raciCell: "raci-cell",
   roleRow: "role-row",
 
   // Filesystem & projets

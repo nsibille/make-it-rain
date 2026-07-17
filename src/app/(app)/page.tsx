@@ -11,16 +11,16 @@ export default async function AppHome() {
 
   return (
     <main className="mx-auto max-w-5xl px-6 py-10 pt-14 sm:px-10 lg:pt-10">
-      <header className="mb-8">
-        <p className="label-mono text-nano">Cadrage Studio</p>
-        <h1 className="mt-2 text-title text-ink">Vos projets</h1>
+      <header className="mb-6">
+        <p className="label-mono text-nano">Espace de travail</p>
+        <h1 className="mt-1.5 text-title text-ink">Vos projets</h1>
         <p className="mt-1 text-body text-ink-2">
           Du 6-Pack aux arborescences PBS / WBS / OBS et à la gouvernance.
         </p>
       </header>
 
       {projects.length === 0 ? (
-        <div className="rounded-node border border-dashed border-border-strong bg-surface-2 px-6 py-12 text-center">
+        <div className="rounded-pop border border-dashed border-border-strong bg-surface-2 px-6 py-12 text-center">
           <FolderOpen
             className="mx-auto text-ink-4"
             size={28}

@@ -30,19 +30,19 @@ function resolveSiteUrl(): URL {
 export const metadata: Metadata = {
   metadataBase: resolveSiteUrl(),
   title: {
-    default: "Cadrage Studio",
-    template: "%s · Cadrage Studio",
+    default: "Stuudio",
+    template: "%s · Stuudio",
   },
   description:
-    "Outil de cadrage projet pour PMO : du 6-Pack aux arborescences PBS / WBS / OBS et à la gouvernance, partageables par rôles.",
-  applicationName: "Cadrage Studio",
+    "Stuudio — outil de cadrage projet pour PMO : du 6-Pack aux arborescences PBS / WBS / OBS et à la gouvernance, partageables par rôles.",
+  applicationName: "Stuudio",
   openGraph: {
-    title: "Cadrage Studio",
+    title: "Stuudio",
     description:
       "Du 6-Pack aux arborescences PBS / WBS / OBS et à la gouvernance.",
     type: "website",
     locale: "fr_FR",
-    siteName: "Cadrage Studio",
+    siteName: "Stuudio",
   },
   robots: { index: false, follow: false },
 };

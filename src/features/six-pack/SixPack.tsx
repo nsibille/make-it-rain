@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import { Plus, Trash2 } from "lucide-react";
 import { cn } from "@/lib/cn";
+import { Card } from "@/components/ui/Card";
 import { SLUGS } from "@/lib/slugs";
 import type { Enums, Json } from "@/lib/supabase/types";
 import type { SixpackData, SixpackItem } from "./data";
@@ -51,6 +52,7 @@ export function SixPack({
           field="contexte"
           title="Contexte & enjeux"
           description="Pourquoi ce projet ? (optionnel)"
+          accent="bg-ink-4"
           initialValue={initial.contexte}
           className="lg:col-span-2"
         />
@@ -62,6 +64,8 @@ export function SixPack({
           title="Objectifs"
           description="Résultats visés, idéalement SMART."
           placeholder="Ajouter un objectif…"
+          dotClass="bg-status-progress"
+          accent="bg-status-progress"
           initial={byKind("objective")}
         />
 
@@ -72,6 +76,8 @@ export function SixPack({
           title="Résultats / livrables attendus"
           description="Produits concrets à sortir."
           placeholder="Ajouter un livrable…"
+          dotClass="bg-raci-a"
+          accent="bg-raci-a"
           initial={byKind("deliverable")}
         />
 
@@ -85,6 +91,7 @@ export function SixPack({
           extraType="text"
           labelPlaceholder="Nom"
           extraPlaceholder="Rôle"
+          accent="bg-raci-c"
           initial={byKind("stakeholder")}
         />
 
@@ -98,6 +105,7 @@ export function SixPack({
           extraType="date"
           labelPlaceholder="Jalon"
           extraPlaceholder=""
+          accent="bg-raci-i"
           initial={byKind("milestone")}
         />
 
@@ -109,6 +117,7 @@ export function SixPack({
           description="Ce qui est explicitement inclus."
           placeholder="Ajouter au périmètre IN…"
           dotClass="bg-status-done"
+          accent="bg-team-1"
           initial={byKind("scope_in")}
         />
 
@@ -120,6 +129,7 @@ export function SixPack({
           description="Ce qui est explicitement exclu (anti scope creep)."
           placeholder="Ajouter au périmètre OUT…"
           dotClass="bg-ink-4"
+          accent="bg-ink-4"
           initial={byKind("scope_out")}
         />
 
@@ -129,6 +139,7 @@ export function SixPack({
           field="contraintes"
           title="Contraintes & risques"
           description="Budget, normes, dépendances…"
+          accent="bg-risk-high"
           initialValue={initial.contraintes}
           className="lg:col-span-2"
         />
@@ -140,30 +151,33 @@ export function SixPack({
 function BlockCard({
   title,
   description,
+  accent = "bg-ink-4",
   children,
   className,
 }: {
   title: string;
   description?: string;
+  accent?: string;
   children: React.ReactNode;
   className?: string;
 }) {
   return (
-    <section
+    <Card
+      as="section"
       data-slug={SLUGS.sixPackBlock}
-      className={cn(
-        "rounded-node border border-border bg-surface p-4 shadow-1",
-        className,
-      )}
+      className={className}
     >
       <header className="mb-3">
-        <p className="label-mono text-nano">{title}</p>
+        <p className="label-mono text-nano flex items-center gap-1.5">
+          <span className={cn("size-1.5 rounded-[2px]", accent)} aria-hidden />
+          {title}
+        </p>
         {description && (
-          <p className="mt-0.5 text-caption text-ink-3">{description}</p>
+          <p className="mt-1 text-caption text-ink-3">{description}</p>
         )}
       </header>
       {children}
-    </section>
+    </Card>
   );
 }
 
@@ -173,6 +187,7 @@ function ProseBlock({
   field,
   title,
   description,
+  accent,
   initialValue,
   className,
 }: {
@@ -181,6 +196,7 @@ function ProseBlock({
   field: "contexte" | "contraintes";
   title: string;
   description?: string;
+  accent?: string;
   initialValue: string;
   className?: string;
 }) {
@@ -195,7 +211,7 @@ function ProseBlock({
   }
 
   return (
-    <BlockCard title={title} description={description} className={className}>
+    <BlockCard title={title} description={description} accent={accent} className={className}>
       {canEdit ? (
         <textarea
           value={value}
@@ -203,7 +219,7 @@ function ProseBlock({
           onBlur={save}
           rows={4}
           placeholder="Rédiger…"
-          className="w-full resize-y rounded-node border border-border bg-surface px-3 py-2 text-body text-ink outline-none focus:border-border-strong focus:bg-surface-2"
+          className="w-full resize-y rounded-node border border-border-strong bg-surface px-2.5 py-[7px] text-body text-ink outline-none placeholder:text-ink-5 focus:border-ink-4 focus:bg-surface-2"
         />
       ) : value ? (
         <p className="whitespace-pre-wrap text-body text-ink">{value}</p>
@@ -223,6 +239,7 @@ function SimpleListBlock({
   placeholder,
   initial,
   dotClass = "bg-ink-4",
+  accent,
   className,
 }: {
   projectId: string;
@@ -233,6 +250,7 @@ function SimpleListBlock({
   placeholder: string;
   initial: SixpackItem[];
   dotClass?: string;
+  accent?: string;
   className?: string;
 }) {
   const [items, setItems] = useState(initial);
@@ -258,7 +276,7 @@ function SimpleListBlock({
   }
 
   return (
-    <BlockCard title={title} description={description} className={className}>
+    <BlockCard title={title} description={description} accent={accent} className={className}>
       <ul className="space-y-1">
         {items.map((it) => (
           <li key={it.id} className="group flex items-center gap-2">
@@ -333,6 +351,7 @@ function PairListBlock({
   labelPlaceholder,
   extraPlaceholder,
   initial,
+  accent,
   className,
 }: {
   projectId: string;
@@ -345,6 +364,7 @@ function PairListBlock({
   labelPlaceholder: string;
   extraPlaceholder: string;
   initial: SixpackItem[];
+  accent?: string;
   className?: string;
 }) {
   const [items, setItems] = useState(initial);
@@ -382,7 +402,7 @@ function PairListBlock({
   }
 
   return (
-    <BlockCard title={title} description={description} className={className}>
+    <BlockCard title={title} description={description} accent={accent} className={className}>
       <ul className="space-y-1">
         {items.map((it) => (
           <PairRow
