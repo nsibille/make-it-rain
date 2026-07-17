@@ -10,10 +10,30 @@ const jetBrainsMono = JetBrains_Mono({
   display: "swap",
 });
 
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+
 export const metadata: Metadata = {
-  title: "Cadrage Studio",
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: "Cadrage Studio",
+    template: "%s · Cadrage Studio",
+  },
   description:
-    "Outil de cadrage projet pour PMO : du 6-Pack aux arborescences PBS / WBS / OBS et à la gouvernance.",
+    "Outil de cadrage projet pour PMO : du 6-Pack aux arborescences PBS / WBS / OBS et à la gouvernance, partageables par rôles.",
+  applicationName: "Cadrage Studio",
+  openGraph: {
+    title: "Cadrage Studio",
+    description:
+      "Du 6-Pack aux arborescences PBS / WBS / OBS et à la gouvernance.",
+    type: "website",
+    locale: "fr_FR",
+    siteName: "Cadrage Studio",
+  },
+  robots: { index: false, follow: false },
+};
+
+export const viewport = {
+  themeColor: "#ffffff",
 };
 
 export default function RootLayout({

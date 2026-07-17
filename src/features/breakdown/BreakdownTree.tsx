@@ -206,16 +206,32 @@ export function BreakdownTree({
   const canvasRef = useRef<HTMLDivElement>(null);
   const [view, setView] = useState({ x: 0, y: 0, k: 1 });
   const [panning, setPanning] = useState(false);
+  const viewRef = useRef(view);
+  useEffect(() => {
+    viewRef.current = view;
+  }, [view]);
   const drag = useRef<{
     sx: number;
     sy: number;
     ox: number;
     oy: number;
   } | null>(null);
+  const touch = useRef<{
+    mode: "pan" | "pinch";
+    sx: number;
+    sy: number;
+    ox: number;
+    oy: number;
+    d0: number;
+    k0: number;
+    mx: number;
+    my: number;
+  } | null>(null);
 
   useEffect(() => {
     const el = canvasRef.current;
     if (!el) return;
+
     const onWheel = (e: WheelEvent) => {
       e.preventDefault();
       const rect = el.getBoundingClientRect();
@@ -228,8 +244,76 @@ export function BreakdownTree({
         return { x, y, k };
       });
     };
+
+    const onTouchStart = (e: TouchEvent) => {
+      if ((e.target as HTMLElement).closest("[data-card]")) return;
+      const rect = el.getBoundingClientRect();
+      const v = viewRef.current;
+      if (e.touches.length === 1) {
+        touch.current = {
+          mode: "pan",
+          sx: e.touches[0].clientX,
+          sy: e.touches[0].clientY,
+          ox: v.x,
+          oy: v.y,
+          d0: 0,
+          k0: v.k,
+          mx: 0,
+          my: 0,
+        };
+      } else if (e.touches.length === 2) {
+        const dx = e.touches[0].clientX - e.touches[1].clientX;
+        const dy = e.touches[0].clientY - e.touches[1].clientY;
+        touch.current = {
+          mode: "pinch",
+          sx: 0,
+          sy: 0,
+          ox: v.x,
+          oy: v.y,
+          d0: Math.hypot(dx, dy) || 1,
+          k0: v.k,
+          mx: (e.touches[0].clientX + e.touches[1].clientX) / 2 - rect.left,
+          my: (e.touches[0].clientY + e.touches[1].clientY) / 2 - rect.top,
+        };
+      }
+    };
+
+    const onTouchMove = (e: TouchEvent) => {
+      const cur = touch.current;
+      if (!cur) return;
+      e.preventDefault();
+      if (cur.mode === "pan" && e.touches.length >= 1) {
+        setView((v) => ({
+          ...v,
+          x: cur.ox + (e.touches[0].clientX - cur.sx),
+          y: cur.oy + (e.touches[0].clientY - cur.sy),
+        }));
+      } else if (cur.mode === "pinch" && e.touches.length >= 2) {
+        const dx = e.touches[0].clientX - e.touches[1].clientX;
+        const dy = e.touches[0].clientY - e.touches[1].clientY;
+        const k = clamp((cur.k0 * Math.hypot(dx, dy)) / cur.d0, 0.4, 2);
+        setView({
+          k,
+          x: cur.mx - ((cur.mx - cur.ox) / cur.k0) * k,
+          y: cur.my - ((cur.my - cur.oy) / cur.k0) * k,
+        });
+      }
+    };
+
+    const onTouchEnd = (e: TouchEvent) => {
+      if (e.touches.length === 0) touch.current = null;
+    };
+
     el.addEventListener("wheel", onWheel, { passive: false });
-    return () => el.removeEventListener("wheel", onWheel);
+    el.addEventListener("touchstart", onTouchStart, { passive: false });
+    el.addEventListener("touchmove", onTouchMove, { passive: false });
+    el.addEventListener("touchend", onTouchEnd);
+    return () => {
+      el.removeEventListener("wheel", onWheel);
+      el.removeEventListener("touchstart", onTouchStart);
+      el.removeEventListener("touchmove", onTouchMove);
+      el.removeEventListener("touchend", onTouchEnd);
+    };
   }, []);
 
   function onPointerDown(e: React.MouseEvent) {
