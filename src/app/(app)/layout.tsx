@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getFolders, getProjects } from "@/features/filesystem/data";
 import { Sidebar } from "@/features/filesystem/Sidebar";
+import { seedExamplesIfEmpty } from "@/features/examples/seed";
 
 /**
  * Shell de l'app authentifiée : sidebar (dossiers + projets) + zone
@@ -18,6 +19,9 @@ export default async function AppLayout({
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) redirect("/login");
+
+  // Clone les exemples pizza à la première connexion (idempotent).
+  await seedExamplesIfEmpty().catch(() => {});
 
   const [{ data: profile }, folders, projects] = await Promise.all([
     supabase.from("profiles").select("email").eq("id", user.id).single(),
