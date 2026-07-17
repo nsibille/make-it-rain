@@ -1,9 +1,11 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { getFolders, getProjects } from "@/features/filesystem/data";
+import { Sidebar } from "@/features/filesystem/Sidebar";
 
 /**
- * Shell de l'app authentifiée. Gate d'accès : sans session → /login.
- * La sidebar / navigation seront ajoutées au M2. La sécurité réelle
+ * Shell de l'app authentifiée : sidebar (dossiers + projets) + zone
+ * principale. Gate d'accès : sans session → /login. La sécurité réelle
  * reste la RLS ; ce gate est le confort de navigation.
  */
 export default async function AppLayout({
@@ -15,10 +17,22 @@ export default async function AppLayout({
   const {
     data: { user },
   } = await supabase.auth.getUser();
+  if (!user) redirect("/login");
 
-  if (!user) {
-    redirect("/login");
-  }
+  const [{ data: profile }, folders, projects] = await Promise.all([
+    supabase.from("profiles").select("email").eq("id", user.id).single(),
+    getFolders(),
+    getProjects(),
+  ]);
 
-  return <div className="min-h-dvh bg-surface text-ink">{children}</div>;
+  return (
+    <div className="flex min-h-dvh bg-surface text-ink">
+      <Sidebar
+        folders={folders}
+        projects={projects}
+        userEmail={profile?.email ?? user.email ?? null}
+      />
+      <div className="min-w-0 flex-1">{children}</div>
+    </div>
+  );
 }
