@@ -10,10 +10,25 @@ const jetBrainsMono = JetBrains_Mono({
   display: "swap",
 });
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+const FALLBACK_SITE_URL = "http://localhost:3000";
+
+// Tolérant à une valeur mal formée dans l'environnement (ex. "url.com" sans
+// protocole) : on préfixe `https://` si besoin, et on retombe sur localhost
+// plutôt que de faire échouer le build (new URL() lève sinon ERR_INVALID_URL).
+function resolveSiteUrl(): URL {
+  const raw = process.env.NEXT_PUBLIC_SITE_URL?.trim();
+  if (!raw) return new URL(FALLBACK_SITE_URL);
+
+  const candidate = /^https?:\/\//i.test(raw) ? raw : `https://${raw}`;
+  try {
+    return new URL(candidate);
+  } catch {
+    return new URL(FALLBACK_SITE_URL);
+  }
+}
 
 export const metadata: Metadata = {
-  metadataBase: new URL(SITE_URL),
+  metadataBase: resolveSiteUrl(),
   title: {
     default: "Cadrage Studio",
     template: "%s · Cadrage Studio",
