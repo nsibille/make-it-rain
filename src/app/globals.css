@@ -1,0 +1,119 @@
+@import "tailwindcss";
+@import "../styles/tokens.css";
+
+/* ============================================================
+   Thème Tailwind v4 — mapping des tokens (source: tokens.css).
+   `inline` : les utilitaires référencent les var() directement,
+   donc tokens.css reste l'unique source de vérité.
+   ============================================================ */
+@theme inline {
+  /* Couleurs → bg-*, text-*, border-* */
+  --color-surface:   var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-surface-3: var(--surface-3);
+
+  --color-ink:   var(--ink);
+  --color-ink-1: var(--ink-1);
+  --color-ink-2: var(--ink-2);
+  --color-ink-3: var(--ink-3);
+  --color-ink-4: var(--ink-4);
+
+  --color-brand:  var(--brand);
+  --color-danger: var(--danger);
+
+  --color-border:        var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-border-soft:   var(--border-soft);
+
+  --color-pbs:      var(--pbs);
+  --color-pbs-soft: var(--pbs-soft);
+  --color-pbs-text: var(--pbs-text);
+  --color-wbs:      var(--wbs);
+  --color-wbs-soft: var(--wbs-soft);
+  --color-wbs-text: var(--wbs-text);
+  --color-obs:      var(--obs);
+  --color-obs-soft: var(--obs-soft);
+  --color-obs-text: var(--obs-text);
+
+  --color-raci-r: var(--raci-r);
+  --color-raci-r-soft: var(--raci-r-soft);
+  --color-raci-r-text: var(--raci-r-text);
+  --color-raci-a: var(--raci-a);
+  --color-raci-a-soft: var(--raci-a-soft);
+  --color-raci-a-text: var(--raci-a-text);
+  --color-raci-c: var(--raci-c);
+  --color-raci-c-soft: var(--raci-c-soft);
+  --color-raci-c-text: var(--raci-c-text);
+  --color-raci-i: var(--raci-i);
+  --color-raci-i-soft: var(--raci-i-soft);
+  --color-raci-i-text: var(--raci-i-text);
+
+  --color-status-progress: var(--status-progress);
+  --color-status-blocked:  var(--status-blocked);
+  --color-status-waiting:  var(--status-waiting);
+  --color-status-done:     var(--status-done);
+
+  --color-risk-low:  var(--risk-low);
+  --color-risk-med:  var(--risk-med);
+  --color-risk-high: var(--risk-high);
+
+  --color-graph-connector: var(--graph-connector);
+
+  /* Polices → font-sans, font-mono */
+  --font-sans: var(--font-sans-stack);
+  --font-mono: var(--font-mono-stack);
+
+  /* Rayons → rounded-chip / rounded-node / rounded-pop */
+  --radius-chip: var(--radius-chip);
+  --radius-node: var(--radius-node);
+  --radius-pop:  var(--radius-pop);
+
+  /* Ombres → shadow-1 / shadow-2 */
+  --shadow-1: var(--shadow-1);
+  --shadow-2: var(--shadow-2);
+}
+
+/* ── Base ─────────────────────────────────────────────────── */
+html {
+  color-scheme: light;
+}
+
+body {
+  background: var(--surface);
+  color: var(--ink);
+  font-family: var(--font-sans-stack);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Titre de nœud éditable (contenteditable) : placeholder si vide */
+.node-title:empty::before {
+  content: attr(data-placeholder);
+  color: var(--ink-4);
+  pointer-events: none;
+}
+
+/* Label mono en MAJUSCULES (DESIGN_SYSTEM §Typographie) */
+.label-mono {
+  font-family: var(--font-mono-stack);
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--ink-3);
+}
+
+/* Accessibilité : focus clavier visible + reduced-motion (plancher qualité) */
+:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
