@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { JetBrains_Mono } from "next/font/google";
 import "./globals.css";
+import { Providers } from "./providers";
 
 // Mono (labels, codes, méta). Sans = Helvetica Neue = system stack, rien à charger.
 const jetBrainsMono = JetBrains_Mono({
@@ -22,7 +23,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="fr" className={`${jetBrainsMono.variable} h-full`}>
-      <body className="min-h-full">{children}</body>
+      <body className="min-h-full">
+        <Providers>{children}</Providers>
+      </body>
     </html>
   );
 }
