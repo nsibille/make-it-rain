@@ -237,14 +237,12 @@ export function AuthForm({
           </div>
         )}
 
-        <Button type="submit" disabled={pending} className="w-full">
-          {pending
-            ? "…"
-            : mode === "signin"
-              ? "Se connecter"
-              : mode === "signup"
-                ? "Créer mon compte"
-                : "Envoyer le lien"}
+        <Button type="submit" loading={pending} className="w-full">
+          {mode === "signin"
+            ? "Se connecter"
+            : mode === "signup"
+              ? "Créer mon compte"
+              : "Envoyer le lien"}
         </Button>
       </form>
 

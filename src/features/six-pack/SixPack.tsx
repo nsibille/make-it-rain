@@ -4,7 +4,12 @@ import { useState, useTransition } from "react";
 import { Plus, Trash2 } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { Card } from "@/components/ui/Card";
+import { Spinner } from "@/components/ui/Spinner";
 import { SLUGS } from "@/lib/slugs";
+
+/** Un id optimiste (avant retour serveur) porte le préfixe `temp-`. */
+const isPending = (id: string) => id.startsWith("temp-");
+const tempId = () => `temp-${crypto.randomUUID()}`;
 import type { Enums, Json } from "@/lib/supabase/types";
 import type { SixpackData, SixpackItem } from "./data";
 import {
@@ -257,12 +262,25 @@ function SimpleListBlock({
   const [draft, setDraft] = useState("");
   const [, startTransition] = useTransition();
 
-  async function add() {
+  // Ajout optimiste : l'élément apparaît immédiatement (id `temp-`), puis on
+  // réconcilie avec la ligne réelle renvoyée par le serveur.
+  function add() {
     const label = draft.trim();
     if (!label) return;
     setDraft("");
-    const row = await addSixpackItem(projectId, kind, label);
-    setItems((prev) => [...prev, row]);
+    const id = tempId();
+    setItems((prev) => [
+      ...prev,
+      { id, project_id: projectId, kind, label, meta: {}, position: prev.length },
+    ]);
+    (async () => {
+      try {
+        const row = await addSixpackItem(projectId, kind, label);
+        setItems((prev) => prev.map((i) => (i.id === id ? row : i)));
+      } catch {
+        setItems((prev) => prev.filter((i) => i.id !== id));
+      }
+    })();
   }
 
   function commit(id: string, label: string) {
@@ -279,7 +297,13 @@ function SimpleListBlock({
     <BlockCard title={title} description={description} accent={accent} className={className}>
       <ul className="space-y-1">
         {items.map((it) => (
-          <li key={it.id} className="group flex items-center gap-2">
+          <li
+            key={it.id}
+            className={cn(
+              "group animate-fade-in-up flex items-center gap-2 transition-opacity",
+              isPending(it.id) && "opacity-55",
+            )}
+          >
             <span
               className={cn("h-1.5 w-1.5 shrink-0 rounded-full", dotClass)}
               aria-hidden
@@ -297,15 +321,18 @@ function SimpleListBlock({
             ) : (
               <span className="flex-1 text-body text-ink">{it.label}</span>
             )}
-            {canEdit && (
-              <button
-                onClick={() => remove(it.id)}
-                aria-label="Supprimer"
-                className="text-ink-4 opacity-0 hover:text-danger group-hover:opacity-100"
-              >
-                <Trash2 size={14} aria-hidden />
-              </button>
-            )}
+            {canEdit &&
+              (isPending(it.id) ? (
+                <Spinner size={12} className="mr-0.5 text-ink-4" />
+              ) : (
+                <button
+                  onClick={() => remove(it.id)}
+                  aria-label="Supprimer"
+                  className="text-ink-4 opacity-0 transition-all hover:text-danger active:scale-90 group-hover:opacity-100"
+                >
+                  <Trash2 size={14} aria-hidden />
+                </button>
+              ))}
           </li>
         ))}
         {items.length === 0 && !canEdit && (
@@ -330,7 +357,7 @@ function SimpleListBlock({
           <button
             onClick={add}
             aria-label="Ajouter"
-            className="shrink-0 rounded-node border border-border-strong p-1.5 text-ink-2 hover:bg-surface-2"
+            className="shrink-0 rounded-node border border-border-strong p-1.5 text-ink-2 transition-all duration-[var(--duration-instant)] ease-[var(--ease)] hover:bg-surface-2 active:scale-90"
           >
             <Plus size={14} aria-hidden />
           </button>
@@ -378,14 +405,25 @@ function PairListBlock({
     return typeof v === "string" ? v : "";
   };
 
-  async function add() {
+  function add() {
     const label = draftLabel.trim();
     if (!label) return;
     const meta: Json = { [metaKey]: draftExtra.trim() };
     setDraftLabel("");
     setDraftExtra("");
-    const row = await addSixpackItem(projectId, kind, label, meta);
-    setItems((prev) => [...prev, row]);
+    const id = tempId();
+    setItems((prev) => [
+      ...prev,
+      { id, project_id: projectId, kind, label, meta, position: prev.length },
+    ]);
+    (async () => {
+      try {
+        const row = await addSixpackItem(projectId, kind, label, meta);
+        setItems((prev) => prev.map((i) => (i.id === id ? row : i)));
+      } catch {
+        setItems((prev) => prev.filter((i) => i.id !== id));
+      }
+    })();
   }
 
   function commit(id: string, label: string, extra: string) {
@@ -408,6 +446,7 @@ function PairListBlock({
           <PairRow
             key={it.id}
             canEdit={canEdit}
+            pending={isPending(it.id)}
             label={it.label}
             extra={extraOf(it)}
             extraType={extraType}
@@ -450,7 +489,7 @@ function PairListBlock({
           <button
             onClick={add}
             aria-label="Ajouter"
-            className="shrink-0 rounded-node border border-border-strong p-1.5 text-ink-2 hover:bg-surface-2"
+            className="shrink-0 rounded-node border border-border-strong p-1.5 text-ink-2 transition-all duration-[var(--duration-instant)] ease-[var(--ease)] hover:bg-surface-2 active:scale-90"
           >
             <Plus size={14} aria-hidden />
           </button>
@@ -462,6 +501,7 @@ function PairListBlock({
 
 function PairRow({
   canEdit,
+  pending = false,
   label,
   extra,
   extraType,
@@ -471,6 +511,7 @@ function PairRow({
   onDelete,
 }: {
   canEdit: boolean;
+  pending?: boolean;
   label: string;
   extra: string;
   extraType: "text" | "date";
@@ -501,7 +542,12 @@ function PairRow({
   }
 
   return (
-    <li className="group flex items-center gap-1.5">
+    <li
+      className={cn(
+        "group animate-fade-in-up flex items-center gap-1.5 transition-opacity",
+        pending && "opacity-55",
+      )}
+    >
       <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-ink-4" aria-hidden />
       <input
         value={l}
@@ -522,13 +568,17 @@ function PairRow({
           extraType === "date" ? "w-36 font-mono text-caption" : "w-32",
         )}
       />
-      <button
-        onClick={onDelete}
-        aria-label="Supprimer"
-        className="text-ink-4 opacity-0 hover:text-danger group-hover:opacity-100"
-      >
-        <Trash2 size={14} aria-hidden />
-      </button>
+      {pending ? (
+        <Spinner size={12} className="mr-0.5 text-ink-4" />
+      ) : (
+        <button
+          onClick={onDelete}
+          aria-label="Supprimer"
+          className="text-ink-4 opacity-0 transition-all hover:text-danger active:scale-90 group-hover:opacity-100"
+        >
+          <Trash2 size={14} aria-hidden />
+        </button>
+      )}
     </li>
   );
 }

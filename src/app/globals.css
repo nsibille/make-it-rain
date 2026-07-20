@@ -203,6 +203,76 @@ body {
   pointer-events: none;
 }
 
+/* ============================================================
+   Mouvement — micro-interactions (source : tokens.css §Mouvement).
+   Keyframes + utilitaires token-driven. Tout est neutralisé sous
+   `prefers-reduced-motion` par la règle en fin de fichier.
+   ============================================================ */
+@keyframes stu-fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes stu-fade-in-up {
+  from { opacity: 0; transform: translateY(5px); }
+  to   { opacity: 1; transform: none; }
+}
+@keyframes stu-scale-in {
+  from { opacity: 0; transform: scale(0.97); }
+  to   { opacity: 1; transform: none; }
+}
+@keyframes stu-slide-in-right {
+  from { opacity: 0; transform: translateX(14px); }
+  to   { opacity: 1; transform: none; }
+}
+@keyframes stu-pop {
+  0%   { transform: scale(0.85); }
+  60%  { transform: scale(1.04); }
+  100% { transform: scale(1); }
+}
+@keyframes stu-shimmer {
+  100% { transform: translateX(100%); }
+}
+@keyframes stu-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Entrées — appliquées au montage (both = garde l'état final) */
+.animate-fade-in       { animation: stu-fade-in var(--duration-base) var(--ease) both; }
+.animate-fade-in-up    { animation: stu-fade-in-up var(--duration-base) var(--ease-out) both; }
+.animate-scale-in      { animation: stu-scale-in var(--duration-fast) var(--ease-out) both; }
+.animate-slide-in-right{ animation: stu-slide-in-right var(--duration-slow) var(--ease-out) both; }
+.animate-pop           { animation: stu-pop var(--duration-base) var(--ease-spring) both; }
+
+/* Entrées échelonnées (listes, grilles de cartes) */
+.animate-fade-in-up.stagger-1 { animation-delay: 40ms; }
+.animate-fade-in-up.stagger-2 { animation-delay: 80ms; }
+.animate-fade-in-up.stagger-3 { animation-delay: 120ms; }
+.animate-fade-in-up.stagger-4 { animation-delay: 160ms; }
+
+/* Spinner (labels de chargement, boutons occupés) */
+.animate-spin-token { animation: stu-spin 720ms linear infinite; }
+
+/* Squelette — bloc neutre + balayage clair (skeleton / lazy loading) */
+.skeleton {
+  position: relative;
+  overflow: hidden;
+  background: var(--surface-2);
+  border-radius: var(--radius-node);
+}
+.skeleton::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.65),
+    transparent
+  );
+  animation: stu-shimmer var(--shimmer-period) var(--ease) infinite;
+}
+
 /* Accessibilité : focus clavier visible + reduced-motion (plancher qualité) */
 :focus-visible {
   outline: 2px solid var(--ink);
@@ -217,5 +287,9 @@ body {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
+  }
+  /* Le balayage des squelettes ne doit pas clignoter : on l'efface. */
+  .skeleton::after {
+    display: none;
   }
 }

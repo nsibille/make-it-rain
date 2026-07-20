@@ -31,7 +31,7 @@ export function Modal({
 
   return (
     <div
-      className="fixed inset-0 z-50 grid place-items-center bg-ink/30 p-4"
+      className="animate-fade-in fixed inset-0 z-50 grid place-items-center bg-ink/30 p-4"
       onClick={onClose}
       role="presentation"
     >
@@ -42,7 +42,7 @@ export function Modal({
         aria-label={title}
         onClick={(e) => e.stopPropagation()}
         className={cn(
-          "w-full max-w-md rounded-pop border border-border bg-surface shadow-2",
+          "animate-scale-in w-full max-w-md rounded-pop border border-border bg-surface shadow-2",
           className,
         )}
       >

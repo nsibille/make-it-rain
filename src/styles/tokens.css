@@ -160,8 +160,17 @@
   --shadow-2: 0 4px 14px rgba(20, 22, 26, 0.08);
   --shadow-3: 0 4px 24px rgba(20, 22, 26, 0.06);
 
-  /* ── Mouvement ──────────────────────────────────────────── */
-  --ease: cubic-bezier(0.2, 0, 0, 1);
-  --duration-fast: 120ms;
-  --duration-base: 200ms;
+  /* ── Mouvement ──────────────────────────────────────────────
+     Courbes & durées : source unique pour toutes les micro-interactions
+     (boutons, squelettes, entrées de panneaux, optimistic UI). Lire ces
+     tokens, ne jamais coder une durée/courbe en dur. Le mouvement est
+     désactivé sous `prefers-reduced-motion` (voir globals.css). */
+  --ease:        cubic-bezier(0.2, 0, 0, 1);      /* sortie standard */
+  --ease-out:    cubic-bezier(0.16, 1, 0.3, 1);   /* décélération franche */
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1); /* léger rebond (pop) */
+  --duration-instant: 90ms;   /* pression bouton, feedback tactile */
+  --duration-fast:   120ms;   /* hover, focus, petites transitions */
+  --duration-base:   200ms;   /* entrées, fondus */
+  --duration-slow:   320ms;   /* panneaux, modales */
+  --shimmer-period: 1400ms;   /* balayage des squelettes */
 }

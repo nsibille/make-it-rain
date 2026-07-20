@@ -57,10 +57,12 @@ export function AnnotationsProvider({
   const [thread, setThread] = useState<Annotation[]>([]);
   const [loading, setLoading] = useState(false);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const [currentUserEmail, setCurrentUserEmail] = useState<string | null>(null);
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
       setCurrentUserId(data.user?.id ?? null);
+      setCurrentUserEmail(data.user?.email ?? null);
     });
   }, [supabase]);
 
@@ -151,22 +153,47 @@ export function AnnotationsProvider({
     async (body: string) => {
       const text = body.trim();
       if (!text || !openNodeId || !currentUserId) return;
-      await supabase.from("annotations").insert({
+
+      // Optimiste : le commentaire apparaît immédiatement dans le fil, sans
+      // attendre l'API. Le Realtime rechargera le fil (réconciliation de l'id)
+      // et incrémentera le compteur ; on n'incrémente donc pas ici (anti double).
+      const tempId = `temp-${crypto.randomUUID()}`;
+      const nodeId = openNodeId;
+      setThread((prev) => [
+        ...prev,
+        {
+          id: tempId,
+          node_id: nodeId,
+          author_id: currentUserId,
+          body: text,
+          created_at: new Date().toISOString(),
+          author_email: currentUserEmail,
+        },
+      ]);
+
+      const { error } = await supabase.from("annotations").insert({
         project_id: projectId,
-        node_id: openNodeId,
+        node_id: nodeId,
         author_id: currentUserId,
         body: text,
       });
-      // le Realtime mettra à jour le compteur ; on rafraîchit le fil tout de suite
-      await loadThread(openNodeId);
+
+      // On part du principe que l'appel passe ; en cas d'échec réel, on retire
+      // l'optimiste pour ne pas laisser un fantôme.
+      if (error) {
+        setThread((prev) => prev.filter((a) => a.id !== tempId));
+      }
     },
-    [supabase, projectId, openNodeId, currentUserId, loadThread],
+    [supabase, projectId, openNodeId, currentUserId, currentUserEmail],
   );
 
   const deleteComment = useCallback(
     async (id: string) => {
-      await supabase.from("annotations").delete().eq("id", id);
-      if (openNodeId) await loadThread(openNodeId);
+      // Optimiste : retrait immédiat ; le Realtime décrémentera le compteur.
+      const nodeId = openNodeId;
+      setThread((prev) => prev.filter((a) => a.id !== id));
+      const { error } = await supabase.from("annotations").delete().eq("id", id);
+      if (error && nodeId) await loadThread(nodeId); // rollback si refus
     },
     [supabase, openNodeId, loadThread],
   );
