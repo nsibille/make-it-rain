@@ -168,9 +168,9 @@
   --ease:        cubic-bezier(0.2, 0, 0, 1);      /* sortie standard */
   --ease-out:    cubic-bezier(0.16, 1, 0.3, 1);   /* décélération franche */
   --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1); /* léger rebond (pop) */
-  --duration-instant: 90ms;   /* pression bouton, feedback tactile */
-  --duration-fast:   120ms;   /* hover, focus, petites transitions */
-  --duration-base:   200ms;   /* entrées, fondus */
-  --duration-slow:   320ms;   /* panneaux, modales */
-  --shimmer-period: 1400ms;   /* balayage des squelettes */
+  --duration-instant: 70ms;   /* pression bouton, feedback tactile */
+  --duration-fast:    90ms;   /* hover, focus, petites transitions */
+  --duration-base:   150ms;   /* entrées, fondus */
+  --duration-slow:   230ms;   /* panneaux, modales */
+  --shimmer-period: 1150ms;   /* balayage des squelettes */
 }

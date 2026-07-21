@@ -256,10 +256,10 @@ body {
 .animate-toast-out     { animation: stu-toast-out var(--duration-instant) var(--ease) both; }
 
 /* Entrées échelonnées (listes, grilles de cartes) */
-.animate-fade-in-up.stagger-1 { animation-delay: 40ms; }
-.animate-fade-in-up.stagger-2 { animation-delay: 80ms; }
-.animate-fade-in-up.stagger-3 { animation-delay: 120ms; }
-.animate-fade-in-up.stagger-4 { animation-delay: 160ms; }
+.animate-fade-in-up.stagger-1 { animation-delay: 24ms; }
+.animate-fade-in-up.stagger-2 { animation-delay: 48ms; }
+.animate-fade-in-up.stagger-3 { animation-delay: 72ms; }
+.animate-fade-in-up.stagger-4 { animation-delay: 96ms; }
 
 /* Spinner (labels de chargement, boutons occupés) */
 .animate-spin-token { animation: stu-spin 720ms linear infinite; }
