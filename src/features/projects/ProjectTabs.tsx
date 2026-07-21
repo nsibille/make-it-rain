@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/cn";
 import { SLUGS } from "@/lib/slugs";
+import { LinkPending, RouteProgress } from "@/components/ui/RouteProgress";
 import { PROJECT_VIEWS } from "./views";
 
 /** Onglets de navigation entre les vues d'un projet (URL deep-linkables). */
@@ -24,13 +25,15 @@ export function ProjectTabs({ projectId }: { projectId: string }) {
             href={href}
             aria-current={active ? "page" : undefined}
             className={cn(
-              "-mb-px whitespace-nowrap border-b-2 px-3 py-2 text-body transition-colors",
+              "-mb-px inline-flex items-center gap-1.5 whitespace-nowrap border-b-2 px-3 py-2 text-body transition-colors",
               active
                 ? "border-ink font-medium text-ink"
                 : "border-transparent text-ink-3 hover:text-ink",
             )}
           >
             {view.label}
+            <LinkPending />
+            <RouteProgress />
           </Link>
         );
       })}

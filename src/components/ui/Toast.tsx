@@ -7,12 +7,12 @@ import {
   useEffect,
   useRef,
   useState,
-  useSyncExternalStore,
 } from "react";
 import { createPortal } from "react-dom";
 import { AlertTriangle, CheckCircle2, Info, X } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { SLUGS } from "@/lib/slugs";
+import { useIsClient } from "@/lib/useIsClient";
 
 /**
  * Toaster — notifications discrètes qui guident l'utilisateur (DESIGN_SYSTEM
@@ -65,18 +65,8 @@ const DEFAULT_DURATION: Record<ToastVariant, number> = {
 /** Au-delà, on retire la plus ancienne pour ne jamais encombrer l'écran. */
 const MAX_VISIBLE = 4;
 
-/** Durée de l'animation de sortie (aligné sur --duration-instant = 90ms). */
+/** Durée de l'animation de sortie (aligné sur --duration-instant). */
 const LEAVE_MS = 90;
-
-const noopSubscribe = () => () => {};
-/** `true` côté client, `false` au rendu serveur — pour n'ouvrir le portail qu'après hydratation. */
-function useIsClient() {
-  return useSyncExternalStore(
-    noopSubscribe,
-    () => true,
-    () => false,
-  );
-}
 
 const VARIANT_STYLES: Record<
   ToastVariant,

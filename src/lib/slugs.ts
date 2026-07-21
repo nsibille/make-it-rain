@@ -23,6 +23,7 @@ export const SLUGS = {
   popover: "popover",
   toaster: "toaster",
   toast: "toast",
+  routeProgress: "route-progress",
   table: "table",
   raciCell: "raci-cell",
   roleRow: "role-row",

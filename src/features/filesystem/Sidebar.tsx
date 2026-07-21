@@ -17,6 +17,7 @@ import { Button } from "@/components/ui/Button";
 import { Modal } from "@/components/ui/Modal";
 import { Wordmark } from "@/components/ui/Wordmark";
 import { FieldLabel, Input, Select } from "@/components/ui/Field";
+import { LinkPending, RouteProgress } from "@/components/ui/RouteProgress";
 import { cn } from "@/lib/cn";
 import { SLUGS } from "@/lib/slugs";
 import { PROJECT_STATUS } from "@/features/projects/status";
@@ -267,10 +268,12 @@ function ProjectRow({
         {project.emoji ?? "📁"}
       </span>
       <span className="flex-1 truncate text-caption text-ink">{project.name}</span>
+      <LinkPending className="text-ink-3" />
       <span
         className={cn("h-1.5 w-1.5 shrink-0 rounded-full", status.dot)}
         title={status.label}
       />
+      <RouteProgress />
     </Link>
   );
 }
