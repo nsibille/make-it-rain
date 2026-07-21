@@ -213,15 +213,15 @@ body {
   to   { opacity: 1; }
 }
 @keyframes stu-fade-in-up {
-  from { opacity: 0; transform: translateY(5px); }
+  from { opacity: 0; transform: translateY(3px); }
   to   { opacity: 1; transform: none; }
 }
 @keyframes stu-scale-in {
-  from { opacity: 0; transform: scale(0.97); }
+  from { opacity: 0; transform: scale(0.985); }
   to   { opacity: 1; transform: none; }
 }
 @keyframes stu-slide-in-right {
-  from { opacity: 0; transform: translateX(14px); }
+  from { opacity: 0; transform: translateX(8px); }
   to   { opacity: 1; transform: none; }
 }
 @keyframes stu-pop {
@@ -229,8 +229,22 @@ body {
   60%  { transform: scale(1.04); }
   100% { transform: scale(1); }
 }
+@keyframes stu-toast-in {
+  from { opacity: 0; transform: translateY(4px) scale(0.99); }
+  to   { opacity: 1; transform: none; }
+}
+@keyframes stu-toast-out {
+  from { opacity: 1; transform: none; }
+  to   { opacity: 0; transform: translateY(2px) scale(0.99); }
+}
 @keyframes stu-shimmer {
   100% { transform: translateX(100%); }
+}
+/* Barre de navigation — segment indéterminé qui traverse la fenêtre. */
+@keyframes stu-route-bar {
+  0%   { transform: translateX(-100%) scaleX(0.5); }
+  55%  { transform: translateX(110%) scaleX(0.9); }
+  100% { transform: translateX(340%) scaleX(0.5); }
 }
 @keyframes stu-spin {
   to { transform: rotate(360deg); }
@@ -243,14 +257,38 @@ body {
 .animate-slide-in-right{ animation: stu-slide-in-right var(--duration-slow) var(--ease-out) both; }
 .animate-pop           { animation: stu-pop var(--duration-base) var(--ease-spring) both; }
 
+/* Toaster — fondu discret et rapide à l'entrée et à la sortie (notifications) */
+.animate-toast-in      { animation: stu-toast-in var(--duration-fast) var(--ease-out) both; }
+.animate-toast-out     { animation: stu-toast-out var(--duration-instant) var(--ease) both; }
+
 /* Entrées échelonnées (listes, grilles de cartes) */
-.animate-fade-in-up.stagger-1 { animation-delay: 40ms; }
-.animate-fade-in-up.stagger-2 { animation-delay: 80ms; }
-.animate-fade-in-up.stagger-3 { animation-delay: 120ms; }
-.animate-fade-in-up.stagger-4 { animation-delay: 160ms; }
+.animate-fade-in-up.stagger-1 { animation-delay: 14ms; }
+.animate-fade-in-up.stagger-2 { animation-delay: 28ms; }
+.animate-fade-in-up.stagger-3 { animation-delay: 42ms; }
+.animate-fade-in-up.stagger-4 { animation-delay: 56ms; }
 
 /* Spinner (labels de chargement, boutons occupés) */
 .animate-spin-token { animation: stu-spin 720ms linear infinite; }
+
+/* Barre de progression de navigation (comble le délai clic → contenu) */
+.route-bar-track {
+  position: fixed;
+  inset: 0 0 auto 0;
+  height: 2px;
+  z-index: 70;
+  overflow: hidden;
+  pointer-events: none;
+  background: transparent;
+}
+.route-bar-fill {
+  height: 100%;
+  width: 32%;
+  transform-origin: left center;
+  border-radius: 0 2px 2px 0;
+  background: var(--ink);
+  box-shadow: 0 0 8px rgba(20, 22, 26, 0.35);
+  animation: stu-route-bar 820ms var(--ease) infinite;
+}
 
 /* Squelette — bloc neutre + balayage clair (skeleton / lazy loading) */
 .skeleton {
@@ -291,5 +329,13 @@ body {
   /* Le balayage des squelettes ne doit pas clignoter : on l'efface. */
   .skeleton::after {
     display: none;
+  }
+  /* La barre de nav ne peut pas défiler : on la fige pleine largeur, discrète,
+     pour qu'elle signale quand même l'activité de chargement. */
+  .route-bar-fill {
+    width: 100%;
+    transform: none;
+    opacity: 0.5;
+    animation: none;
   }
 }

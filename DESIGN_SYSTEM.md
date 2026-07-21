@@ -56,7 +56,7 @@ Le WBS est la **sortie principale** du cadrage. Exemple de référence dans le D
 
 ## Primitives d'UI (d'après le DS)
 
-`Button` (primary encre / hover `--ink-1` ; secondary blanc `border-strong` ; ghost ; danger `--danger`), `Chip`, `StatusBadge` (dot + label), `Metric` (mono label + grand chiffre), `ProgressBar` (piste `--border-soft` + remplissage teinté), `Segmented`/`Tabs`, `Field` (input/label mono uppercase, dates en mono), `Modal`/`Popover` (`--shadow-2`), `Table` (en-têtes mono uppercase, lignes hover `#FCFCFD`), `RoleRow` (PMO / Annotateur / Observateur avec badge).
+`Button` (primary encre / hover `--ink-1` ; secondary blanc `border-strong` ; ghost ; danger `--danger`), `Chip`, `StatusBadge` (dot + label), `Metric` (mono label + grand chiffre), `ProgressBar` (piste `--border-soft` + remplissage teinté), `Segmented`/`Tabs`, `Field` (input/label mono uppercase, dates en mono), `Modal`/`Popover` (`--shadow-2`), `Toast`/`Toaster` (notifications discrètes, cf. §Toaster), `Table` (en-têtes mono uppercase, lignes hover `#FCFCFD`), `RoleRow` (PMO / Annotateur / Observateur avec badge).
 
 Tout composant réutilisable porte `data-slug` (CLAUDE.md §5). Réimplémenter en React depuis la référence — **ne pas** importer le HTML statique ni `support.js` (runtime de preview Claude Design).
 
@@ -64,12 +64,27 @@ Tout composant réutilisable porte `data-slug` (CLAUDE.md §5). Réimplémenter 
 
 Le mouvement est **discret, rapide, utile** — jamais décoratif. Il confirme l'action, jamais il ne la fait attendre. Source unique : tokens `--duration-*` / `--ease*` / `--shimmer-period` (`tokens.css §Mouvement`). Ne jamais coder une durée/courbe en dur.
 
-- **Courbes** : `--ease` (sortie standard) · `--ease-out` (décélération, entrées de panneaux) · `--ease-spring` (léger rebond, `pop`). **Durées** : `--duration-instant` 90 (pression) · `--duration-fast` 120 (hover/focus) · `--duration-base` 200 (fondus) · `--duration-slow` 320 (modales, volets).
+- **Courbes** : `--ease` (sortie standard) · `--ease-out` (décélération, entrées de panneaux) · `--ease-spring` (léger rebond, `pop`). **Durées** (calées pour un ressenti quasi instantané) : `--duration-instant` 55 (pression) · `--duration-fast` 70 (hover/focus) · `--duration-base` 110 (fondus) · `--duration-slow` 180 (modales, volets). Plafond : rien au-delà de ~200 ms côté UI — le mouvement confirme, il ne fait jamais patienter. Amplitudes d'entrée volontairement faibles (translation ≤ 3–4px) pour paraître immédiat plutôt que « glissant ».
 - **Boutons** (`Button` / `IconButton`) : pression tactile `active:scale` (token instant). Toute action qui déclenche un **appel back-end** passe `loading` → spinner + `disabled` + `aria-busy` (empêche le double-clic). Les boutons d'action bruts (icônes de suppression, `+`, cellules RACI) portent aussi `active:scale`.
 - **Squelettes** (`Skeleton` / `SkeletonText`, classe `.skeleton`) : bloc `--surface-2` + balayage clair (`--shimmer-period`). Servent le **lazy loading** via les fichiers `loading.tsx` de chaque route (tableau de bord, coquille projet, 6-Pack, arbres, gouvernance). Jamais de spinner plein écran : on montre la **forme** de ce qui charge.
+- **Barre de navigation** (`RouteProgress`, `route-progress`) : **comble le délai clic → contenu** (chargement du segment RSC, avant même que les squelettes s'affichent). Fin filet 2px `--ink` en haut de fenêtre, segment indéterminé qui traverse, monté sous le `<Link>` cliqué via `useLinkStatus`. Délai de ~120ms avant apparition : rien ne clignote sur une navigation instantanée, l'animation ne se montre que pour une attente **réelle**. Complété par `LinkPending` (petit spinner inline sur l'onglet / la ligne de projet cliquée) pour le repère local. Sous `prefers-reduced-motion` : filet statique discret (pas de défilement).
 - **Optimistic UI** : les mutations partent **sans attendre l'API** (on suppose l'appel OK). L'élément apparaît immédiatement avec un id `temp-` (opacité réduite + micro-spinner), puis on **réconcilie** avec la ligne réelle ; rollback silencieux seulement en cas d'échec réel. Vaut pour : items du 6-Pack, nœuds d'arbre, commentaires d'annotation, statut projet, création dossier/projet (fermeture de modale immédiate).
 - **Entrées** : `animate-fade-in` (fondu), `animate-fade-in-up` (listes, cartes de projet, instances, nœuds), `animate-scale-in` (modales, popover compte), `animate-slide-in-right` (volet d'annotations), `animate-pop` (ponctuel). Classes token-driven définies dans `globals.css`.
 - **`prefers-reduced-motion`** : tout est neutralisé (durées ~0, balayage des squelettes masqué) par la règle globale de `globals.css`. Plancher non négociable.
+
+## Toaster (`toaster` / `toast`)
+
+Notifications **discrètes** qui guident sans jamais interrompre : aide contextuelle, réassurance après une action enregistrée, ou erreur précise. Jamais bloquant, jamais tape-à-l'œil.
+
+- **Placement** : empilées en **bas à droite** (bas-centre sur mobile), au-dessus des modales (`z-60`), `pointer-events` limité aux cartes. Largeur `max-w-sm`, carte `--surface` + `border --border`, **filet gauche 3px** à la teinte de l'intention, rayon `--radius-pop`, ombre `--shadow-2`.
+- **Trois intentions** (une teinte = un sens, cf. système de teintes) :
+  - `info` — filet `--border-strong`, icône `Info` neutre `--ink-3` (aide, indication légère).
+  - `success` — filet + icône `--status-done` (réassurance : « Projet publié », « Modifications enregistrées »).
+  - `error` — filet + icône `--status-blocked` (erreur, sans excuse).
+- **Mouvement** : fondu à l'entrée **et** à la sortie (`.animate-toast-in` / `.animate-toast-out`, tokens `--duration-base` / `--duration-fast`, `translateY` léger). Neutralisé sous `prefers-reduced-motion` par la règle globale.
+- **Cycle de vie** : auto-effacement (info 4 s · success 3 s · error 6 s ; `duration: null` = persistant). Fermeture **d'une** notification (bouton `×`) **ou de toutes** (« Tout fermer » dès 2 notifications visibles, max 4 empilées).
+- **Accessibilité** : conteneur `aria-live="polite"` ; `role="status"` (info/success), `role="alert"` (error).
+- **API** : `ToastProvider` monté une fois dans `providers.tsx` ; hook `useToast()` → `{ toast, success, error, info, dismiss, dismissAll }` dans les Client Components. Suit la règle « le bouton dit l'action, le toast la confirme ».
 
 ## Écriture d'interface
 

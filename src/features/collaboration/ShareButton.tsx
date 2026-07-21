@@ -5,6 +5,7 @@ import { Share2, Trash2, UserPlus } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Modal } from "@/components/ui/Modal";
 import { FieldLabel, Input, Select } from "@/components/ui/Field";
+import { useToast } from "@/components/ui/Toast";
 import { SLUGS } from "@/lib/slugs";
 import type { Member } from "./members";
 import { changeMemberRole, inviteMember, removeMember } from "./actions";
@@ -27,18 +28,20 @@ export function ShareButton({
   const [open, setOpen] = useState(false);
   const [email, setEmail] = useState("");
   const [role, setRole] = useState<InviteRole>("annotator");
-  const [feedback, setFeedback] = useState<{ ok: boolean; message: string } | null>(
-    null,
-  );
   const [pending, startTransition] = useTransition();
+  const toast = useToast();
 
   function submitInvite(e: React.FormEvent) {
     e.preventDefault();
-    setFeedback(null);
+    const invited = email;
     startTransition(async () => {
-      const res = await inviteMember(projectId, email, role);
-      setFeedback(res);
-      if (res.ok) setEmail("");
+      const res = await inviteMember(projectId, invited, role);
+      if (res.ok) {
+        setEmail("");
+        toast.success(res.message);
+      } else {
+        toast.error(res.message);
+      }
     });
   }
 
@@ -78,18 +81,6 @@ export function ShareButton({
               </Select>
             </label>
 
-            {feedback && (
-              <p
-                className={
-                  feedback.ok
-                    ? "animate-fade-in-up text-caption text-status-done-text"
-                    : "animate-fade-in-up text-caption text-status-blocked-text"
-                }
-              >
-                {feedback.message}
-              </p>
-            )}
-
             <div className="flex justify-end">
               <Button type="submit" loading={pending}>
                 {!pending && <UserPlus size={14} aria-hidden />}
@@ -128,11 +119,13 @@ function MemberRow({
   member: Member;
 }) {
   const [pending, startTransition] = useTransition();
+  const toast = useToast();
+  const label = member.email || member.user_id;
 
   return (
     <li className="flex items-center gap-2">
       <span className="flex-1 truncate font-mono text-caption text-ink">
-        {member.email || member.user_id}
+        {label}
       </span>
       {member.role === "pmo" ? (
         <span className="label-mono text-nano">{ROLE_LABEL.pmo}</span>
@@ -140,15 +133,13 @@ function MemberRow({
         <select
           value={member.role}
           disabled={pending}
-          onChange={(e) =>
-            startTransition(() =>
-              changeMemberRole(
-                projectId,
-                member.user_id,
-                e.target.value as InviteRole,
-              ),
-            )
-          }
+          onChange={(e) => {
+            const next = e.target.value as InviteRole;
+            startTransition(async () => {
+              await changeMemberRole(projectId, member.user_id, next);
+              toast.success(`Rôle mis à jour — ${ROLE_LABEL[next]}`);
+            });
+          }}
           className="rounded-node border border-border bg-surface px-2 py-1 text-caption text-ink outline-none focus:border-border-strong"
         >
           <option value="annotator">Annotateur</option>
@@ -158,7 +149,10 @@ function MemberRow({
       {member.role !== "pmo" && (
         <button
           onClick={() =>
-            startTransition(() => removeMember(projectId, member.user_id))
+            startTransition(async () => {
+              await removeMember(projectId, member.user_id);
+              toast.success(`${label} retiré du projet`);
+            })
           }
           disabled={pending}
           aria-label="Retirer le membre"
