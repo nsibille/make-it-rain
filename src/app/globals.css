@@ -213,15 +213,15 @@ body {
   to   { opacity: 1; }
 }
 @keyframes stu-fade-in-up {
-  from { opacity: 0; transform: translateY(5px); }
+  from { opacity: 0; transform: translateY(3px); }
   to   { opacity: 1; transform: none; }
 }
 @keyframes stu-scale-in {
-  from { opacity: 0; transform: scale(0.97); }
+  from { opacity: 0; transform: scale(0.985); }
   to   { opacity: 1; transform: none; }
 }
 @keyframes stu-slide-in-right {
-  from { opacity: 0; transform: translateX(14px); }
+  from { opacity: 0; transform: translateX(8px); }
   to   { opacity: 1; transform: none; }
 }
 @keyframes stu-pop {
@@ -230,12 +230,12 @@ body {
   100% { transform: scale(1); }
 }
 @keyframes stu-toast-in {
-  from { opacity: 0; transform: translateY(6px) scale(0.985); }
+  from { opacity: 0; transform: translateY(4px) scale(0.99); }
   to   { opacity: 1; transform: none; }
 }
 @keyframes stu-toast-out {
   from { opacity: 1; transform: none; }
-  to   { opacity: 0; transform: translateY(3px) scale(0.985); }
+  to   { opacity: 0; transform: translateY(2px) scale(0.99); }
 }
 @keyframes stu-shimmer {
   100% { transform: translateX(100%); }
@@ -256,10 +256,10 @@ body {
 .animate-toast-out     { animation: stu-toast-out var(--duration-instant) var(--ease) both; }
 
 /* Entrées échelonnées (listes, grilles de cartes) */
-.animate-fade-in-up.stagger-1 { animation-delay: 24ms; }
-.animate-fade-in-up.stagger-2 { animation-delay: 48ms; }
-.animate-fade-in-up.stagger-3 { animation-delay: 72ms; }
-.animate-fade-in-up.stagger-4 { animation-delay: 96ms; }
+.animate-fade-in-up.stagger-1 { animation-delay: 14ms; }
+.animate-fade-in-up.stagger-2 { animation-delay: 28ms; }
+.animate-fade-in-up.stagger-3 { animation-delay: 42ms; }
+.animate-fade-in-up.stagger-4 { animation-delay: 56ms; }
 
 /* Spinner (labels de chargement, boutons occupés) */
 .animate-spin-token { animation: stu-spin 720ms linear infinite; }
