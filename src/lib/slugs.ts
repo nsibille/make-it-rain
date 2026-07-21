@@ -21,6 +21,8 @@ export const SLUGS = {
   field: "field",
   modal: "modal",
   popover: "popover",
+  toaster: "toaster",
+  toast: "toast",
   table: "table",
   raciCell: "raci-cell",
   roleRow: "role-row",
