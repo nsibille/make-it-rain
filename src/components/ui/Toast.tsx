@@ -65,8 +65,8 @@ const DEFAULT_DURATION: Record<ToastVariant, number> = {
 /** Au-delà, on retire la plus ancienne pour ne jamais encombrer l'écran. */
 const MAX_VISIBLE = 4;
 
-/** Durée de l'animation de sortie (aligné sur --duration-base = 200ms). */
-const LEAVE_MS = 200;
+/** Durée de l'animation de sortie (aligné sur --duration-instant = 90ms). */
+const LEAVE_MS = 90;
 
 const noopSubscribe = () => () => {};
 /** `true` côté client, `false` au rendu serveur — pour n'ouvrir le portail qu'après hydratation. */
