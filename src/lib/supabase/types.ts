@@ -409,6 +409,7 @@ export type Database = {
         Args: { p: string };
         Returns: Database["public"]["Enums"]["project_role"];
       };
+      seed_examples: { Args: { payload: Json }; Returns: undefined };
     };
     Enums: {
       project_role: "pmo" | "annotator" | "observer";
